@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title>simply</title>
+	<link rel="stylesheet" href="resources/css/style.css" type="text/css" media="all" charset="utf-8" />
+	<!--[if IE]><link rel="stylesheet" href="css/style_ie.css" type="text/css" media="all" charset="utf-8" /><![endif]-->
+
+    <script type="text/javascript" src="http://www.google.com/jsapi?key=ABQIAAAA9bGCOCqFgXcv08MI67_MnRQL9-T7OIQjXggHr1bZOXBxsSy_IhR1HUtSfEVtae4Kb-Fyp5QXZKPrbA"></script>
+
+    <script type="text/javascript">
+      google.load("maps", "2");
+      google.load('visualization', '1', {'packages':['annotatedtimeline']});
+      </script>
+    <script src="resources/js/jquery-1.3.2.js" type="text/javascript"></script>
+	
+    <style type="text/css" media="screen">
+      #map { 
+          width:100%;
+          height:400px;
+      }
+      #list { 
+          
+          width:200px;
+          background:#eee;
+          list-style:none;
+          padding:0; 
+      }
+      #list li { 
+          padding:10px; 
+      }
+      #list li:hover { 
+          background:#555;
+          color:#fff;
+          cursor:pointer;
+          cursor:hand; 
+      }      
+
+      #chart_div {
+          margin-top: 5px;
+          width: 100%;
+          height: 200px;
+          border: 1px solid gray;
+      }
+    </style>
+
+    <script src="resources/js/prototipo.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+	
+	<div id="simply">
+		
+		<!-- header -->
+		<div id="header">
+			<div class="wrap clear">
+				<!-- logo -->
+				<div id="logo">
+					<h1><a href="index.html">Title</a></h1>
+					<h2>css template</h2>
+				</div>
+				<!-- / logo -->
+				
+				<!-- navigation -->
+				<div id="nav">
+					<div class="nav-wrap"><a href="index.html">Home</a> <span>About</span> <a href="index.html">News</a> <a href="index.html">Work</a> <a href="index.html">Contact</a></div>
+				</div>
+				<!-- / navigation -->
+			</div>
+		</div>
+		<!-- / header -->
+		
+		<!-- middle -->
+		<div id="middle">
+			<div class="wrap clear">
+				<!-- content -->
+				<div id="content">
+					<h2>Estaciones</h2>
+					<!--<p class="teaser">Ut imperdiet urna. Vestibulum risus elit, tincidunt commodo, accumsan id, iaculis quis, tortor. Vivamus at massa convallis ipsum facilisis lacinia. Vestibulum est massa, consequat sed, sollicitudin eget, sodales semper, sem. Vivamus vitae justo id risus blandit blandit. Praesent vehicula velit id risus. Nam adipiscing turpis. Nulla facilisi. Proin viverra lectus in massa.</p>-->
+
+                    <ul id="list"></ul>
+					<div id="map" ></div>
+
+                    <div style="display: none" id="datosestacion">
+                      <h3 id="estacionid">aaa</h3>
+                      <h4>Historial</h4>
+                      <div id="chart_div"></div>
+                    </div>
+
+										
+				</div>
+				<!-- / content -->
+				
+				<!-- sidebar -->
+				<div id="sidebar">
+					<!-- box -->
+					<div class="sidebar-nav box">
+						<h3>Menu</h3>
+						<ul>
+							<li><a href="index.html">sociis natoque penatibus</a></li>
+							<li><a href="index.html">magnis dis parturient </a></li>
+							<li><a href="index.html">montes nascetur ridiculus </a></li>
+							<li><span>Etiam bibendum egestas</span></li>
+							<li><a href="index.html">Quisque eleifend consequat</a></li>
+							<li><a href="index.html">Curabitur commodo </a></li>
+							<li><a href="index.html">Nulla ut nisi.</a></li>
+						</ul>
+					</div>
+					<!-- / box -->
+					
+					<!-- box -->
+					<div class="box">
+						<h3>Some information</h3>
+						<p>Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam bibendum egestas purus. Quisque eleifend consequat ipsum. Sed dolor sapien, aliquet eu, vulputate vitae, interdum ut, nulla.</p>
+					</div>
+					<!-- / box -->
+					
+					<!-- box -->
+					<div class="box">
+						<h3>Some information</h3>
+						<p>Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam bibendum egestas purus. Quisque eleifend consequat ipsum. Sed dolor sapien, aliquet eu, vulputate vitae, interdum ut, nulla.</p>
+					</div>
+					<!-- / box -->
+					
+				</div>
+				<!-- / sidebar -->
+			</div>
+		</div>
+		<!-- / middle -->
+		
+		<!-- footer -->
+		<div id="footer">
+			<div class="wrap">
+				<p class="lft">&copy; 2009 <a href="index.html">your name here</a> <span>//</span> valid xhtml 1.0 strict</p>
+				<p class="rgt">designed by <a href="http://www.renehornig.com/" title="webdesign berlin">rené hornig</a></p>
+			</div>
+		</div>
+		<!-- / footer -->
+		
+	</div>
+
+</body>
+</html>

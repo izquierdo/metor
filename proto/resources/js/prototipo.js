@@ -36,6 +36,8 @@ var estaciones = [
 
 
 function mostrarEstacion(estacion){
+    $('#datosestacion').show();
+    $('#estacionid').html(estacion.name);
     var latlng = new GLatLng(estacion.lat, estacion.lng);
     map.openInfoWindowHtml(latlng, '<b>'+estacion.name+'</b><br/><small>' +
                            estacion.lat + "," + estacion.lng+"</small>");
