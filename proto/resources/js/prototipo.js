@@ -94,7 +94,7 @@ $(document).ready(function(){
             };
 
             GEvent.addListener(marker, "click", activate);
-            $("<option />")
+            $("<li />")
                 .html(val.name)
                 .click(activate)
                 .appendTo("#list");

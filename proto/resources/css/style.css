@@ -206,10 +206,10 @@ button {
 	width: 100%;
 }
 
-#middle table th, 
-#middle table td {
-	padding: .5em;
-}
+/* #middle table th,  */
+/* #middle table td { */
+/* 	padding: .5em; */
+/* } */
 
 #middle table thead th {
 	background: #686868;
@@ -287,7 +287,8 @@ button {
 	padding: 0 0 .5em;
 }
 
-#sidebar ul li a,
+/* #sidebar ul li a, */
+#sidebar ul li,
 #sidebar ul li span {
 	background: transparent url('../images/li_dot1.gif') left .75em no-repeat;
 	display: block;	
@@ -297,6 +298,7 @@ button {
 }
 
 #sidebar ul li a:hover, #sidebar ul li a:focus,
+#sidebar ul li:hover, #sidebar ul li:focus,
 #sidebar ul li span {
 	color: #ff7f00;
 }
