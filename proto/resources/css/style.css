@@ -206,10 +206,10 @@ button {
 	width: 100%;
 }
 
-/* #middle table th,  */
-/* #middle table td { */
-/* 	padding: .5em; */
-/* } */
+#middle table th,
+#middle table td {
+	padding: .5em;
+}
 
 #middle table thead th {
 	background: #686868;
