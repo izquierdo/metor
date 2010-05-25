@@ -20,7 +20,7 @@ class Station(models.Model):
         return self._get_last_measurement('temperature')
 
     def _get_last_windspeed(self):
-        return self._get_last_measurement('windspeed')
+        return self._get_last_measurement('wind_speed')
 
     last_temperature = property(_get_last_temperature)
     last_windspeed = property(_get_last_windspeed)
