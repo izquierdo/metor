@@ -103,7 +103,14 @@ class Station(models.Model):
 
         return (last_temperature.valor, last_sensor.unit)
 
+    def _get_last_windspeed(self):
+        last_sensor = self.sensor_set.filter(parameterType = 'wind_speed').order_by('-dateBegin')[0]
+        last_windspeed = last_sensor.windspeed_set.order_by('-measureDate')[0]
+
+        return (last_temperature.valor, last_sensor.unit)
+
     last_temperature = property(_get_last_temperature)
+    last_windspeed = property(_get_last_windspeed)
 
 class Sensor(models.Model):
     class Meta:
@@ -137,37 +144,46 @@ class Uv(models.Model):
         db_table = u'uv'
 
 class WindDirection(models.Model):
-    measuredate = models.DateTimeField(db_column='measureDate') # Field name made lowercase.
-    valor = models.FloatField()
-    codsensor = models.IntegerField(db_column='codSensor') # Field name made lowercase.
     class Meta:
         db_table = u'wind_direction'
 
-class WindGust(models.Model):
-    measuredate = models.DateTimeField(db_column='measureDate') # Field name made lowercase.
+    measureDate = models.DateTimeField()
     valor = models.FloatField()
-    codsensor = models.IntegerField(db_column='codSensor') # Field name made lowercase.
+
+    codSensor = models.ForeignKey(db_column='codSensor')
+
+class WindGust(models.Model):
     class Meta:
         db_table = u'wind_gust'
 
-class WindGustDir(models.Model):
-    measuredate = models.DateTimeField(db_column='measureDate') # Field name made lowercase.
+    measureDate = models.DateTimeField()
     valor = models.FloatField()
-    codsensor = models.IntegerField(db_column='codSensor') # Field name made lowercase.
+
+    codSensor = models.ForeignKey(db_column='codSensor')
+
+class WindGustDir(models.Model):
     class Meta:
         db_table = u'wind_gust_dir'
 
-class WindSpeed(models.Model):
-    measuredate = models.DateTimeField(db_column='measureDate') # Field name made lowercase.
+    measureDate = models.DateTimeField()
     valor = models.FloatField()
-    codsensor = models.IntegerField(db_column='codSensor') # Field name made lowercase.
+
+    codsensor = models.ForeignKey(Sensor, db_column='codSensor')
+
+class WindSpeed(models.Model):
     class Meta:
         db_table = u'wind_speed'
 
-class Windchill(models.Model):
-    measuredate = models.DateTimeField(db_column='measureDate') # Field name made lowercase.
+    measureDate = models.DateTimeField()
     valor = models.FloatField()
-    codsensor = models.IntegerField(db_column='codSensor') # Field name made lowercase.
+
+    codSensor = models.ForeignKey(db_column='codSensor')
+
+class Windchill(models.Model):
     class Meta:
         db_table = u'windchill'
 
+    measureDate = models.DateTimeField()
+    valor = models.FloatField()
+
+    codSensor = models.ForeignKey(db_column='codSensor')
