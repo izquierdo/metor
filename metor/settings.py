@@ -1,4 +1,9 @@
 # Django settings for metor project.
+import os
+import django
+
+DJANGO_ROOT = os.path.dirname(os.path.realpath(django.__file__))
+SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -66,7 +71,8 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'metor.urls'
 
 TEMPLATE_DIRS = (
-        "/home/daniel/django_templates"
+    os.path.join(SITE_ROOT, "templates"),
+    #"/home/daniel/django_templates"
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -77,5 +83,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+#    'django.contrib.admin',
+#    'django.contrib.humanize',
     'metor.maps'
 )
