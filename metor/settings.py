@@ -85,5 +85,6 @@ INSTALLED_APPS = (
     'django.contrib.sites',
 #    'django.contrib.admin',
 #    'django.contrib.humanize',
-    'metor.maps'
+    'metor.maps',
+    'metor.windrose',
 )
