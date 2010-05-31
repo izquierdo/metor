@@ -41,7 +41,8 @@ class Sensor(models.Model):
     stationId = models.ForeignKey(Station, db_column='stationId')
 
     def _get_last_measurement(self):
-        measures_set = getattr(self, "%s_set" % self.parameterType)
+        measures_set_name = "%s_set" % (self.parameterType.replace('_', ''))
+        measures_set = getattr(self, measures_set_name)
         last_measure = measures_set.order_by('-measureDate')[0]
         return (last_measure.value, self.unit)
 
