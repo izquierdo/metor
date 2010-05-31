@@ -4,11 +4,11 @@ class Station(models.Model):
     class Meta:
         db_table = u'station'
 
-    codStation = models.IntegerField(primary_key=True)
+    stationId = models.IntegerField(primary_key=True)
     longitude = models.FloatField()
     latitude = models.FloatField()
     location = models.CharField(max_length=150)
-    idContact = models.CharField(max_length=90)
+    contactId = models.CharField(max_length=90)
 
     def _get_current_sensor(self, type):
         return self.sensor_set.filter(parameterType = type).order_by('-dateBegin')[0]
@@ -29,7 +29,7 @@ class Sensor(models.Model):
     class Meta:
         db_table = u'sensor'
 
-    codSensor = models.IntegerField(primary_key=True)
+    sensorId = models.IntegerField(primary_key=True)
 
     dateBegin = models.DateTimeField() # Field name made lowercase.
     dateend = models.DateTimeField(null=True, db_column='dateEnd', blank=True) # Field name made lowercase.
@@ -38,12 +38,12 @@ class Sensor(models.Model):
     parameterType = models.CharField(max_length=90)
     unit = models.CharField(max_length=30)
 
-    codStation = models.ForeignKey(Station, db_column='codStation')
+    stationId = models.ForeignKey(Station, db_column='stationId')
 
     def _get_last_measurement(self):
         measures_set = getattr(self, "%s_set" % self.parameterType)
         last_measure = measures_set.order_by('-measureDate')[0]
-        return (last_measure.valor, self.unit)
+        return (last_measure.value, self.unit)
 
     last_measurement = property(_get_last_measurement)
 
@@ -51,17 +51,18 @@ class Contact(models.Model):
     class Meta:
         db_table = u'contact'
 
-    id = models.IntegerField(primary_key=True)
+    contactId = models.IntegerField(primary_key=True)
     firstname = models.CharField(max_length=60)
     lastname = models.CharField(max_length=60)
     phone = models.IntegerField()
     email = models.CharField(max_length=90)
 
 class MeditionsToSensors(models.Model):
-    codsensormonitored = models.IntegerField(db_column='codSensorMonitored') # Field name made lowercase.
-    codsensormonitor = models.IntegerField(db_column='codSensorMonitor') # Field name made lowercase.
     class Meta:
         db_table = u'meditions_to_sensors'
+
+    sensorMonitorId = models.IntegerField()
+    sensorMonitoredId = models.IntegerField()
 
 # Mediciones
 
@@ -72,17 +73,9 @@ class Measurement(models.Model):
         abstract = True
 
     measureDate = models.DateTimeField()
-    valor = models.FloatField()
+    value = models.FloatField()
 
-    codSensor = models.ForeignKey(Sensor, db_column='codSensor')
-
-class Temperature(Measurement):
-    class Meta:
-        db_table = u'temperature'
-
-class WindSpeed(Measurement):
-    class Meta:
-        db_table = u'wind_speed'
+    sensorId = models.ForeignKey(Sensor, db_column='sensorId')
 
 class Barometer(Measurement):
     class Meta:
@@ -120,9 +113,17 @@ class RainRate(Measurement):
     class Meta:
         db_table = u'rain_rate'
 
+class Temperature(Measurement):
+    class Meta:
+        db_table = u'temperature'
+
 class Uv(Measurement):
     class Meta:
         db_table = u'uv'
+
+class Windchill(Measurement):
+    class Meta:
+        db_table = u'windchill'
 
 class WindDirection(Measurement):
     class Meta:
@@ -136,6 +137,6 @@ class WindGustDir(Measurement):
     class Meta:
         db_table = u'wind_gust_dir'
 
-class Windchill(Measurement):
+class WindSpeed(Measurement):
     class Meta:
-        db_table = u'windchill'
+        db_table = u'wind_speed'
