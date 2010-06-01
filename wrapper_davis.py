@@ -7,22 +7,22 @@ estacion_id = 1
 
 # IDs de cada sensor en la BD para cada sensor de esta estacion
 sensor_ids = {
-    "barometer": 1,
-    "pressure": 2,
-    "temperature": 3,
-    "humidity": 4,
-    "wind_speed": 5,
+    "barometer": 3,
+    "pressure": 11,
+    "temperature": 4,
+    "humidity": 10,
+    "wind_speed": 1,
     "wind_direction":6,
-    "wind_gust": 15,
-    "wind_gust_dir": 16,
-    "rain_rate": 7,
-    "rain": 8,
-    "dewpoint": 9,
-    "windchill": 10,
-    "heat_index": 11,
-    "et": 12,
-    "radiation": 13,
-    "uv": 14
+    "wind_gust": 16,
+    "wind_gust_dir": 15,
+    "rain_rate": 13,
+    "rain": 9,
+    "dewpoint": 5,
+    "windchill": 2,
+    "heat_index": 12,
+    "et": 14,
+    "radiation": 8,
+    "uv": 7
     }
 
 # en que columnas del csv de entrada se encuentra cada variable
@@ -72,7 +72,7 @@ def process(filename):
                            db="emisiones")
     cur = conn.cursor()
     for table, values in dbrows.iteritems():
-        cur.executemany("INSERT INTO %s (measureDate, valor, codSensor) VALUES (%%s, %%s, %%s)" % table,
+        cur.executemany("INSERT INTO %s (measureDate, value, sensorId) VALUES (%%s, %%s, %%s)" % table,
                         [(date, value, sensor_ids[table]) for date, value in values])
 
     conn.commit()

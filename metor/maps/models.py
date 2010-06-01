@@ -1,17 +1,38 @@
 from django.db import models
 
+class Contact(models.Model):
+    class Meta:
+        db_table = u'contact'
+
+    contactId = models.AutoField(primary_key=True)
+    firstname = models.CharField(max_length=30)
+    lastname = models.CharField(max_length=30)
+    phone = models.CharField(max_length=20)
+    email = models.CharField(max_length=30)
+
+    def __unicode__(self):
+        return "%s %s <%s>" % (self.firstname, self.lastname, self.email)
+
 class Station(models.Model):
     class Meta:
         db_table = u'station'
 
-    stationId = models.IntegerField(primary_key=True)
+    stationId = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=30,db_column='stationName')
     longitude = models.FloatField()
     latitude = models.FloatField()
-    location = models.CharField(max_length=150)
-    contactId = models.CharField(max_length=90)
+    
+    # altitude y latitude son muy parecidos. Se suele usar elevation
+    # para evitar confusion
+    elevation = models.FloatField(db_column='altitude') 
+    location = models.CharField(max_length=50)
+    contact = models.ForeignKey(Contact, db_column='contactId')
+
+    def __unicode__(self):
+        return self.name
 
     def _get_current_sensor(self, type):
-        return self.sensor_set.filter(parameterType = type).order_by('-dateBegin')[0]
+        return self.sensor_set.filter(parameter_type = type).order_by('-begin')[0]
 
     def _get_last_measurement(self, type):
         return self._get_current_sensor(type).last_measurement
@@ -28,55 +49,62 @@ class Station(models.Model):
 class Sensor(models.Model):
     class Meta:
         db_table = u'sensor'
+        unique_together = (('sensorId', 'begin', 'end'),)
 
-    sensorId = models.IntegerField(primary_key=True)
+    sensorId = models.AutoField(primary_key=True)
 
-    dateBegin = models.DateTimeField() # Field name made lowercase.
-    dateend = models.DateTimeField(null=True, db_column='dateEnd', blank=True) # Field name made lowercase.
+    begin = models.DateTimeField(db_column='dateBegin') # Field name made lowercase.
+    end = models.DateTimeField(null=True, db_column='dateEnd', blank=True) # Field name made lowercase.
     granularity = models.IntegerField()
-    meditiontype = models.CharField(max_length=9, db_column='meditionType') # Field name made lowercase.
-    parameterType = models.CharField(max_length=90)
-    unit = models.CharField(max_length=30)
+    medition_type = models.CharField(max_length=3, db_column='meditionType') # Field name made lowercase.
+    parameter_type = models.CharField(max_length=30)
+    unit = models.CharField(max_length=10)
 
-    stationId = models.ForeignKey(Station, db_column='stationId')
+    station = models.ForeignKey(Station, db_column='stationId')
+
+    def __unicode__(self):
+        return u"%s %s"%(self.parameter_type, self.station.name)
 
     def _get_last_measurement(self):
-        measures_set_name = "%s_set" % (self.parameterType.replace('_', ''))
+        measures_set_name = "%s_set" % (self.parameter_type.replace('_', ''))
         measures_set = getattr(self, measures_set_name)
-        last_measure = measures_set.order_by('-measureDate')[0]
+        last_measure = measures_set.order_by('-date')[0]
         return (last_measure.value, self.unit)
 
     last_measurement = property(_get_last_measurement)
 
-class Contact(models.Model):
+
+class SyncTime(models.Model):
     class Meta:
-        db_table = u'contact'
+        db_table = 'sync_times'
+    station = models.ForeignKey(Station)
+    date = models.DateTimeField()
 
-    contactId = models.IntegerField(primary_key=True)
-    firstname = models.CharField(max_length=60)
-    lastname = models.CharField(max_length=60)
-    phone = models.IntegerField()
-    email = models.CharField(max_length=90)
+    def __unicode__(self):
+        return "%s@%s" % (station.name, date)
 
+
+# No entiendo esta tabla -- jcc
 class MeditionsToSensors(models.Model):
     class Meta:
         db_table = u'meditions_to_sensors'
+        unique_together = (('sensorMonitorId', 'sensorMonitoredId'),)
 
     sensorMonitorId = models.IntegerField()
     sensorMonitoredId = models.IntegerField()
 
 # Mediciones
 
-# TODO en la BD, todos los measurements deben tener campo id
-
 class Measurement(models.Model):
     class Meta:
         abstract = True
 
-    measureDate = models.DateTimeField()
+    date = models.DateTimeField(db_column='measureDate')
     value = models.FloatField()
+    sensor = models.ForeignKey(Sensor, db_column='sensorId')
 
-    sensorId = models.ForeignKey(Sensor, db_column='sensorId')
+    def __unicode__(self):
+        return "%s %s (%s %s)" % (self.date, self.value, self.sensor.parameter_type, self.sensor.station.name)
 
 class Barometer(Measurement):
     class Meta:

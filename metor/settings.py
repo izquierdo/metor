@@ -20,6 +20,7 @@ DATABASE_USER = 'root'             # Not used with sqlite3.
 DATABASE_PASSWORD = 'hope'         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+DATABASE_OPTIONS = {"init_command": "SET storage_engine=INNODB"}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -88,3 +89,8 @@ INSTALLED_APPS = (
     'metor.maps',
     'metor.windrose',
 )
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
