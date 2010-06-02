@@ -8,7 +8,7 @@ urlpatterns = patterns('',
     # Example:
     # (r'^metor/', include('metor.foo.urls')),
 
-    (r'^', 'maps.views.index'),
+    (r'^$', 'maps.views.index'),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:

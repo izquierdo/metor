@@ -65,6 +65,10 @@ class Sensor(models.Model):
     def __unicode__(self):
         return u"%s %s"%(self.parameter_type, self.station.name)
 
+    def is_active(self):
+        return self.end == None
+    is_active.boolean = True
+
     def _get_last_measurement(self):
         measures_set_name = "%s_set" % (self.parameter_type.replace('_', ''))
         measures_set = getattr(self, measures_set_name)
