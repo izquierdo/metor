@@ -46,6 +46,92 @@ class Station(models.Model):
     last_temperature = property(_get_last_temperature)
     last_windspeed = property(_get_last_windspeed)
 
+    def get_wind_freqs(self):
+        headings = [
+            ("N", 0.00),
+            ("N", 360.00),
+            ("NNE", 22.50),
+            ("NE", 45.00),
+            ("ENE", 67.50),
+            ("E", 90.00),
+            ("ESE", 112.50),
+            ("SE", 135.00),
+            ("SSE", 157.50),
+            ("S", 180.00),
+            ("SSW", 202.50),
+            ("SW", 225.00),
+            ("WSW", 247.50),
+            ("W", 270.00),
+            ("WNW", 292.50),
+            ("NW", 315.00),
+            ("NNW", 337.50),
+        ]
+
+        speed_ranges = [
+            ("0-3", 0, 3),
+            ("3-6", 3, 6),
+            ("6-9", 6, 9),
+            ("> 9", 9, -1),
+        ]
+
+        def get_heading(degrees):
+            from math import fabs
+
+            for (name, h) in headings:
+                if fabs(h-degrees) < 11.25:
+                    return name
+
+            assert False # we should always return a heading
+
+        def get_speed_range(speed):
+            for (name, lo, hi) in speed_ranges:
+                if (speed >= lo and speed <= hi) or (speed >= lo and hi == -1):
+                    return name
+
+            assert False # incorrect speed_ranges or speed
+
+        #TODO definir bien el rango a buscar
+        speeds = {}
+        directions = {}
+
+        for sensor in self.sensor_set.filter(parameter_type = 'wind_speed').all():
+            for ws in sensor.windspeed_set.all():
+                speeds[ws.date] = ws.value
+
+        for sensor in self.sensor_set.filter(parameter_type = 'wind_direction').all():
+            for wd in sensor.winddirection_set.all():
+                directions[wd.date] = wd.value
+
+        (small,big) = (speeds,directions) if len(speeds) <= len(directions) else (directions,speeds)
+
+        freq_table = {}
+
+        for date in small:
+            if date not in big:
+                continue
+
+            key = (get_speed_range(speeds[date]), get_heading(directions[date]))
+
+            if key in freq_table:
+                freq_table[key] += 1
+            else:
+                freq_table[key] = 0
+
+
+        #TODO mejorar esto
+        tablestr = " ".join([name for name, h in headings[1:]]) + "\n" # don't display N twice
+
+        for (spdname,lo,hi) in speed_ranges:
+            tablestr += spdname + " "
+            for (hdname, heading) in headings[1:]: # don't display N twice
+                tablestr += (str(freq_table.get((spdname, hdname), 0)) + " ")
+
+            tablestr += "\n"
+
+        return tablestr
+
+    windfreqstmp = property(get_wind_freqs)
+
 class Sensor(models.Model):
     class Meta:
         db_table = u'sensor'
