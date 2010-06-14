@@ -159,7 +159,7 @@ class Sensor(models.Model):
         measures_set_name = "%s_set" % (self.parameter_type.replace('_', ''))
         measures_set = getattr(self, measures_set_name)
         last_measure = measures_set.order_by('-date')[0]
-        return (last_measure.value, self.unit)
+        return last_measure
 
     last_measurement = property(_get_last_measurement)
 
