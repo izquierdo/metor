@@ -71,7 +71,7 @@ class Station(models.Model):
             ("0-3", 0, 3),
             ("3-6", 3, 6),
             ("6-9", 6, 9),
-            ("> 9", 9, -1),
+            ("\"> 9\"", 9, -1),
         ]
 
         def get_heading(degrees):
