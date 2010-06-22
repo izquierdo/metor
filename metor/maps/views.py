@@ -1,8 +1,11 @@
 from tempfile import NamedTemporaryFile
+import json
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
+from django.core.urlresolvers import reverse
+from django.core import serializers
 
 import rpy2.robjects as robjects
 
@@ -11,16 +14,26 @@ from models import Station
 
 def index(request):
     stations = Station.objects.all()
-
     return render_to_response('maps/index.html', {'stations' : stations})
+
+def json_stations(request, station_id=None):
+    if station_id is None:
+        stations = []
+        attrs = ["stationId", "name", "longitude", "latitude"]
+        for station in Station.objects.all():
+            s = dict((att, getattr(station, att)) for att in attrs)
+            s["status_url"] = reverse('json_station', args=[station.stationId])
+            stations.append(s)
+        return HttpResponse(json.dumps(stations), mimetype='application/json')
+
 
 def windrose(request, station_name = None):
     if not station_name:
         #TODO error
         return "error"
 
-    #from rpy2.robjects.packages import importr
-
+    # FIXME: name no es unique en Station, ademas puede tener espacios
+    # y caracteres raros.
     station = get_object_or_404(Station, name = station_name)
 
     table_file = NamedTemporaryFile(prefix="windrose.", suffix=".dat.tmp")
