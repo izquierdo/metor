@@ -1,6 +1,13 @@
+from tempfile import NamedTemporaryFile
+
 from django.shortcuts import render_to_response, get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse
+
+import rpy2.robjects as robjects
+
 from models import Station
+
 
 def index(request):
     stations = Station.objects.all()
@@ -11,11 +18,6 @@ def windrose(request, station_name = None):
     if not station_name:
         #TODO error
         return "error"
-
-    from tempfile import NamedTemporaryFile
-
-    from django.http import HttpResponse
-    import rpy2.robjects as robjects
 
     #from rpy2.robjects.packages import importr
 
