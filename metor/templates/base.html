@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>{% block title %} {% endblock %}</title>
+	<link rel="stylesheet" href="{{MEDIA_URL}}css/style.css" type="text/css" media="all" charset="utf-8" />
+	<!--[if IE]><link rel="stylesheet" href="{{MEDIA_URL}}css/style_ie.css" type="text/css" media="all" charset="utf-8" /><![endif]-->
+
+    {% block extrahead %} {% endblock %}
+  </head>
+
+  <body>
+
+	<div id="simply">
+
+		<!-- header -->
+		<div id="header">
+			<div class="wrap clear">
+				<!-- logo -->
+				<div id="logo">
+					<h1><a href="index.html">Metor</a></h1>
+					<h2>Modelo de monitoreo de emisiones y medición de impactos por contaminantes en chimeneas</h2>
+				</div>
+				<!-- / logo -->
+
+				<!-- navigation -->
+				<div id="nav">
+					<div class="nav-wrap"><a href="index.html">Home</a> <span>Estaciones</span> <a href="index.html">Noticias</a> <a href="index.html">Contacto</a></div>
+				</div>
+				<!-- / navigation -->
+			</div>
+		</div>
+		<!-- / header -->
+
+		<!-- middle -->
+		<div id="middle">
+			<div class="wrap clear">
+				<!-- content -->
+				<div id="content">
+                  {% block content %} {% endblock %}
+				</div>
+				<!-- / content -->
+
+				<!-- sidebar -->
+				<div id="sidebar" >
+                    {% block sidebar %} {% endblock %}
+				</div>
+				<!-- / sidebar -->
+			</div>
+		</div>
+		<!-- / middle -->
+
+		<!-- footer -->
+		<div id="footer">
+			<div class="wrap">
+				<p class="lft">Este proyecto ha sido posible gracias al
+                financiamiento de la empresa Metor a través de la
+                LOCTI <br/> &copy; 2009 <a href="index.html">Metor</a>.</p>
+				<p class="rgt">designed by <a href="http://www.renehornig.com/" title="webdesign berlin">rené hornig</a></p>
+			</div>
+		</div>
+		<!-- / footer -->
+
+	</div>
+
+
+
+  </body>
+</html>

@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.core.urlresolvers import reverse
 from django.core import serializers
+from django.template import RequestContext
 
 import rpy2.robjects as robjects
 
@@ -14,7 +15,8 @@ from models import Station
 
 def index(request):
     stations = Station.objects.all()
-    return render_to_response('maps/index.html', {'stations' : stations})
+    return render_to_response('maps/index.html', {'stations' : stations},
+                              context_instance=RequestContext(request))
 
 def json_stations(request, station_id=None):
     if station_id is None:

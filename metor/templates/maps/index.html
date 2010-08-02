@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+    <script type="text/javascript" src="http://www.google.com/jsapi?key=test"></script>
+    <script type="text/javascript">
+    google.load("maps", "2");
+    google.load("jquery", "1.4.2");
+    // google.load('visualization', '1', {'packages':['annotatedtimeline']});
+    </script>
+
+
+    <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=test" type="text/javascript" /></script>
+    <script type="text/javascript">
+
+    var map;
+    var show_station = function(station){
+        var position = new GLatLng(station.latitude,
+                                   station.longitude);
+        var $node = $("<div><b>" + station.name + "</b><br/>" +
+                      "Latitud: " + station.latitude + "<br/>" +
+                      "Longitud: " + station.longitude +
+                      "</div>");
+        map.openInfoWindowHtml(position, $node[0]);
+        // $.getJSON(station.status_url, function(data, status){
+        // });
+    };
+
+    $(document).unload(GUnload);
+    $(document).ready(function(){
+        if (GBrowserIsCompatible()) {
+            map = new GMap2(document.getElementById("map_canvas"));
+            map.setCenter(new GLatLng(8, -66), 6);
+            map.setUIToDefault();
+            $.getJSON('{% url json_stations %}', function(data, status){
+                $.each(data, function(i, station){
+                    var marker = new GMarker(new GLatLng(station.latitude,
+                                                         station.longitude));
+                    map.addOverlay(marker);
+                    GEvent.addListener(marker, "click", function(){
+                        show_station(station);
+                    });
+                });
+            });
+        }
+    });
+
+    </script>
+
+{% endblock %}
+
+{% block content %}
+    <div id="map_canvas" style="width: 100%; border: 1px solid #999; height: 600px"></div>
+{% endblock %}
+
+</html>
