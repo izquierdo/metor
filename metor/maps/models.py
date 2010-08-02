@@ -1,4 +1,9 @@
 from django.db import models
+from django_extensions.db.fields import AutoSlugField
+
+# imports para migrations
+import django_extensions.db.fields
+from south.modelsinspector import add_introspection_rules
 
 class Contact(models.Model):
     class Meta:
@@ -27,6 +32,9 @@ class Station(models.Model):
     elevation = models.FloatField(db_column='altitude') 
     location = models.CharField(max_length=50)
     contact = models.ForeignKey(Contact, db_column='contactId')
+
+    # debe haber un default para que south no se queje
+    slug = AutoSlugField(max_length=100, populate_from='name', default="slug")
 
     def __unicode__(self):
         return self.name
@@ -259,3 +267,22 @@ class WindGustDir(Measurement):
 class WindSpeed(Measurement):
     class Meta:
         db_table = u'wind_speed'
+
+# South rules
+
+_south_station_rules = [
+  (
+    [django_extensions.db.fields.AutoSlugField],
+    [],
+    {
+        "max_length": ["max_length", {"default" : True}],
+        "blank": ["blank", {"default" : True}],
+        "editable": ["editable", {"default" : False}],
+        "populate_from": ["_populate_from", {}],
+        "separator": ["separator", {"default" : u'-'}],
+        "overwrite": ["overwrite", {"default" : False}],
+    },
+  )
+]
+
+add_introspection_rules(_south_station_rules, ["^django_extensions\.db\.fields\.AutoSlugField"])
