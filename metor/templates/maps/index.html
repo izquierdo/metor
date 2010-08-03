@@ -3,16 +3,36 @@
 {% block extrahead %}
     <script type="text/javascript" src="http://www.google.com/jsapi?key=test"></script>
     <script type="text/javascript">
-    google.load("maps", "2");
-    google.load("jquery", "1.4.2");
-    // google.load('visualization', '1', {'packages':['annotatedtimeline']});
+      google.load("maps", "2");
+      google.load("jquery", "1.4.2");
+      google.load('visualization', '1', {'packages':['annotatedtimeline']});
     </script>
 
-
-    <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=test" type="text/javascript" /></script>
     <script type="text/javascript">
 
     var map;
+    var chart;
+    var active_station;
+
+    var show_graph = function(station, parameter){
+        if (chart == null){
+            chart = new google.visualization.AnnotatedTimeLine(document.getElementById('chart_div'));
+        }
+        var url = "{% url json_station_values station_id=-1 %}".replace("-1", station.stationId);
+        $.getJSON(url, {"parameter": parameter}, function(data, status){
+            var datatable = new google.visualization.DataTable();
+            datatable.addColumn('date', 'Date');
+            datatable.addColumn('number', parameter);
+            var rows = []
+            for (var i=0; i < data.values.length; i++){
+                var v = data.values[i];
+                rows[i] = [new Date(v[0],v[1],v[2],v[3],v[4],v[5]), v[6]];
+            }
+            datatable.addRows(rows);
+            chart.draw(datatable);
+        });
+    }
+
     var show_station = function(station){
         var position = new GLatLng(station.latitude,
                                    station.longitude);
@@ -21,8 +41,7 @@
                       "Longitud: " + station.longitude +
                       "</div>");
         map.openInfoWindowHtml(position, $node[0]);
-        // $.getJSON(station.status_url, function(data, status){
-        // });
+        show_graph(station, $('#parameter').val());
     };
 
     $(document).unload(GUnload);
@@ -37,19 +56,57 @@
                                                          station.longitude));
                     map.addOverlay(marker);
                     GEvent.addListener(marker, "click", function(){
+                        active_station = station;
                         show_station(station);
                     });
                 });
             });
         }
+
+        $('#parameter').change(function(){
+            if (active_station != null){
+                show_graph(active_station, $('#parameter').val());
+            }
+        });
     });
 
     </script>
 
+    <style type="text/css" media="screen">
+      #chart_div {
+          margin-top: 5px;
+          width: 100%;
+          height: 200px;
+          border: none;
+          padding:0;
+      }
+    </style>
 {% endblock %}
 
 {% block content %}
-    <div id="map_canvas" style="width: 100%; border: 1px solid #999; height: 600px"></div>
+    <div id="map_canvas" style="width: 100%; border: 1px solid #999; height: 400px"></div>
+
+    <h4>Historial</h4>
+    <select id="parameter">
+       <option value="barometer">Barometer</option>
+       <option value="dewpoint">Dewpoint</option>
+       <option value="et">ET</option>
+       <option value="heat_index">Heat Index</option>
+       <option value="humidity">Humidity</option>
+       <option value="pressure">Pressure</option>
+       <option value="radiation">Radiation</option>
+       <option value="rain">Rain</option>
+       <option value="rain_rate">Rain Rate</option>
+       <option value="temperature" selected="">Temperature</option>
+       <option value="uv">Uv</option>
+       <option value="windchill">Windchill</option>
+       <option value="wind_direction">Wind Direction</option>
+       <option value="wind_speed">Wind Speed</option>
+       <option value="wind_gust">Wind Gust</option>
+       <option value="wind_gust_dir">Wind Gust Dir</option>
+    </select>
+    <div id="chart_div"></div>
+
 {% endblock %}
 
 </html>
