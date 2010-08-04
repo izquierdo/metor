@@ -26,10 +26,10 @@ class Station(models.Model):
     name = models.CharField(max_length=30,db_column='stationName')
     longitude = models.FloatField()
     latitude = models.FloatField()
-    
+
     # altitude y latitude son muy parecidos. Se suele usar elevation
     # para evitar confusion
-    elevation = models.FloatField(db_column='altitude') 
+    elevation = models.FloatField(db_column='altitude')
     location = models.CharField(max_length=50)
     contact = models.ForeignKey(Contact, db_column='contactId')
 
@@ -141,6 +141,11 @@ class Station(models.Model):
 
     windfreqstmp = property(get_wind_freqs)
 
+    @property
+    def active_sensors(self):
+        return self.sensors.filter(end=None)
+
+
 class Sensor(models.Model):
     class Meta:
         db_table = u'sensor'
@@ -157,6 +162,11 @@ class Sensor(models.Model):
 
     station = models.ForeignKey(Station, db_column='stationId')
 
+    def values(self):
+        measures_set_name = "%s_set" % (self.parameter_type.replace('_', ''))
+        measures_set = getattr(self, measures_set_name)
+        return measures_set
+
     def __unicode__(self):
         return u"%s %s"%(self.parameter_type, self.station.name)
 
@@ -165,12 +175,10 @@ class Sensor(models.Model):
     is_active.boolean = True
 
     def _get_last_measurement(self):
-        measures_set_name = "%s_set" % (self.parameter_type.replace('_', ''))
-        measures_set = getattr(self, measures_set_name)
-        last_measure = measures_set.order_by('-date')[0]
-        return last_measure
+        return self.values().order_by('-date')[0]
 
     last_measurement = property(_get_last_measurement)
+
 
 
 class SyncTime(models.Model):
@@ -268,6 +276,26 @@ class WindGustDir(Measurement):
 class WindSpeed(Measurement):
     class Meta:
         db_table = u'wind_speed'
+
+
+def parameter2model(parameter_type):
+    return {"barometer": Barometer,
+            "dewpoint": Dewpoint,
+            "et": Et,
+            "heat_index": HeatIndex,
+            "humidity": Humidity,
+            "pressure": Pressure,
+            "radiation": Radiation,
+            "rain": Rain,
+            "rain_rate": RainRate,
+            "temperature": Temperature,
+            "uv": Uv,
+            "windchill": Windchill,
+            "wind_direction": WindDirection,
+            "wind_gust": WindGust,
+            "wind_gust_dir": WindGustDir,
+            "wind_speed": WindSpeed}[parameter_type]
+
 
 # South rules
 

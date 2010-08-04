@@ -10,7 +10,7 @@ from django.template import RequestContext
 
 import rpy2.robjects as robjects
 
-from models import Station
+from models import Station, parameter2model
 
 
 def index(request):
@@ -18,13 +18,26 @@ def index(request):
     return render_to_response('maps/index.html', {'stations' : stations},
                               context_instance=RequestContext(request))
 
+def json_station_values(request, station_id):
+    station = get_object_or_404(Station, stationId = station_id)
+    parameter = request.GET.get("parameter")
+
+    result = {}
+    model = parameter2model(parameter)
+    values = model.objects.filter(sensor__station=station).order_by("-date")[:2000]
+    result["values"] = [(x.date.year, x.date.month, x.date.day,
+                          x.date.hour, x.date.minute, x.date.second,
+                          x.value) for x in values]
+
+    return HttpResponse(json.dumps(result), mimetype='application/json')
+
 def json_stations(request, station_id=None):
     if station_id is None:
         stations = []
         attrs = ["stationId", "name", "longitude", "latitude"]
         for station in Station.objects.all():
             s = dict((att, getattr(station, att)) for att in attrs)
-            s["status_url"] = reverse('json_station', args=[station.stationId])
+            s["status_url"] = reverse('json_station_values', args=[station.stationId])
             s["windrose_url"] = reverse('windrose', kwargs={'slug': station.slug})
             stations.append(s)
         return HttpResponse(json.dumps(stations), mimetype='application/json')
