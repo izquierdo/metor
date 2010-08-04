@@ -25,18 +25,16 @@ def json_stations(request, station_id=None):
         for station in Station.objects.all():
             s = dict((att, getattr(station, att)) for att in attrs)
             s["status_url"] = reverse('json_station', args=[station.stationId])
+            s["windrose_url"] = reverse('windrose', kwargs={'slug': station.slug})
             stations.append(s)
         return HttpResponse(json.dumps(stations), mimetype='application/json')
 
-
-def windrose(request, station_name = None):
-    if not station_name:
+def windrose(request, slug = None):
+    if not slug:
         #TODO error
         return "error"
 
-    # FIXME: name no es unique en Station, ademas puede tener espacios
-    # y caracteres raros.
-    station = get_object_or_404(Station, name = station_name)
+    station = get_object_or_404(Station, slug = slug)
 
     table_file = NamedTemporaryFile(prefix="windrose.", suffix=".dat.tmp")
     table_file.write(station.windfreqstmp)

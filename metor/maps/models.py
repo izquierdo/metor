@@ -34,7 +34,8 @@ class Station(models.Model):
     contact = models.ForeignKey(Contact, db_column='contactId')
 
     # debe haber un default para que south no se queje
-    slug = AutoSlugField(max_length=100, populate_from='name', default="slug")
+    # el separator es _ ya que - no funciona con la funcion reverse() de Django
+    slug = AutoSlugField(max_length=100, populate_from='name', default="slug", separator="_")
 
     def __unicode__(self):
         return self.name
