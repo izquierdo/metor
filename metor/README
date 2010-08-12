@@ -1,0 +1,5 @@
+Requerimientos:
+
+* Django
+* Django extensions
+* South (http://south.aeracode.org/)
