@@ -62,7 +62,7 @@ def windrose(request, slug = None):
          library(grDevices)
          png(file='%s', width=512, height=512)
          table <- read.table('%s')
-         rosavent(table, 4, 4)
+         rosavent(table, 7, 4)
          dev.off()
      ''' % (png_file.name, table_file.name))
 
