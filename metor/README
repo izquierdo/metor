@@ -3,3 +3,5 @@ Requerimientos:
 * Django
 * Django extensions
 * South (http://south.aeracode.org/)
+  - pip install South
+* R, junto con el paquete climatol
