@@ -145,6 +145,19 @@ class Station(models.Model):
     def active_sensors(self):
         return self.sensors.filter(end=None)
 
+    def values_in_range(type, begin_date, end_date):
+        from fractions import gcd
+
+        sensors = []
+
+        for sensor in self.sensor_set.filter(parameter_type = type).order_by('-begin')[0]:
+            if sensor.begin <= end_date and sensor.end >= begin_date:
+                sensors.append(sensor)
+
+        mcm = 1
+
+        for sensor in sensors:
+            mcm = (sensor.granularity / gcd(sensor.granularity, mcm)) * mcm
 
 class Sensor(models.Model):
     class Meta:
