@@ -2,6 +2,8 @@
 
 {% block extrahead %}
     <script src="{{MEDIA_URL}}/js/jquery-1.4.2.min.js" type="text/javascript"></script>
+    <script src="{{MEDIA_URL}}/js/jquery-ui-1.8.7.custom.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="{{MEDIA_URL}}/css/jquery-ui-1.8.7.custom.css" type="text/css">
 
     <script type="text/javascript" src="http://www.google.com/jsapi?key=test"></script>
     <script type="text/javascript">
@@ -51,6 +53,10 @@
         show_graph(station, $('#parameter').val());
     };
 
+    var update_windrose = function(){
+        $('#rosa').attr('src', active_station.windrose_url + '?begin=' + $('#begin_date').val() + '&end=' + $('#end_date').val());
+    };
+
     $(document).unload(GUnload);
     $(document).ready(function(){
         if (GBrowserIsCompatible()) {
@@ -77,6 +83,11 @@
         });
     });
 
+    $(function() {
+            $('#begin_date').datepicker();
+            $('#end_date').datepicker();
+    });
+
     </script>
 
     <style type="text/css" media="screen">
@@ -99,7 +110,18 @@
         <ul id="info">
         </ul>
 
+
         <h4>Rosa de Viento</h4>
+        <form>
+            <ul>
+                <!--<li><input type="radio" name="range" value="all" />Mostrar todo</li>
+                <li>
+                <input type="radio" name="range" value="select" />Seleccionar rango de fechas:-->
+                Desde <input id="begin_date" type="text"> hasta <input id="end_date" type="text">
+                <!--</li>-->
+                <a href="javascript:update_windrose()">Actualizar rango de fechas</a>
+            </ul>
+        </form>
         <img id="rosa" alt="Rosa de Viento"/>
     </div>
 
