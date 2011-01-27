@@ -145,19 +145,46 @@ class Station(models.Model):
     def active_sensors(self):
         return self.sensors.filter(end=None)
 
-    def values_in_range(type, begin_date, end_date):
+    def values_in_range(self, type, begin_date, end_date):
         from fractions import gcd
+        from datetime import timedelta
 
         sensors = []
 
-        for sensor in self.sensor_set.filter(parameter_type = type).order_by('-begin')[0]:
-            if sensor.begin <= end_date and sensor.end >= begin_date:
+        for sensor in self.sensor_set.filter(parameter_type = type).order_by('begin'):
+            if sensor.begin <= end_date and (sensor.end is None or sensor.end >= begin_date):
                 sensors.append(sensor)
 
-        mcm = 1
+        values = {}
+
+        onemin = timedelta(minutes=1)
 
         for sensor in sensors:
-            mcm = (sensor.granularity / gcd(sensor.granularity, mcm)) * mcm
+            qs = sensor.values().filter(date__gte=begin_date, date__lte=end_date).order_by('date')
+            sensor_values_count = qs.count()
+
+            for idx, measure in enumerate(qs):
+                if idx + 1 == sensor_values_count:
+                    break
+
+                idx_next, next_measure = idx + 1, qs[idx+1]
+
+                if measure.date >= begin_date and measure.date <= end_date:
+                    values[measure.date] = measure
+
+                if next_measure.date >= begin_date and next_measure.date <= end_date:
+                    values[next_measure.date] = next_measure
+
+                current_date = measure.date + onemin
+
+                while current_date < next_measure.date:
+                    if current_date >= begin_date and current_date <= end_date:
+                        values[current_date] = (measure.value + next_measure.value) / 2.0
+
+                    print "next = %s" % str(next_measure.date)
+                    print "curr = %s" % str(current_date)
+
+                    current_date = current_date + onemin
 
 class Sensor(models.Model):
     class Meta:
