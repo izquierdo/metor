@@ -49,8 +49,20 @@ def windrose(request, slug = None):
 
     station = get_object_or_404(Station, slug = slug)
 
+    from datetime import datetime
+
+    if 'begin' in request.GET:
+        begin = datetime.strptime(request.GET['begin'], "%d/%m/%y %H:%M")
+    else:
+        begin = datetime(1900, 1, 1)
+
+    if 'end' in request.GET:
+        end = datetime.strptime(request.GET['end'], "%d/%m/%y %H:%M")
+    else:
+        end = datetime(9900, 12, 31)
+
     table_file = NamedTemporaryFile(prefix="windrose.", suffix=".dat.tmp")
-    table_file.write(station.windfreqstmp)
+    table_file.write(station.get_wind_freqs(begin, end))
     table_file.flush()
 
     png_file = NamedTemporaryFile(prefix="windrose.", suffix=".png.tmp")

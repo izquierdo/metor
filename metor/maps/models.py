@@ -55,7 +55,7 @@ class Station(models.Model):
     last_temperature = property(_get_last_temperature)
     last_windspeed = property(_get_last_windspeed)
 
-    def get_wind_freqs(self):
+    def get_wind_freqs(self, begin=None, end=None):
         headings = [
             ("N", 0.00),
             ("N", 360.00),
@@ -99,17 +99,16 @@ class Station(models.Model):
 
             assert False # incorrect speed_ranges or speed
 
-        #TODO definir bien el rango a buscar
-        speeds = {}
-        directions = {}
+        speeds = self.values_in_range('wind_speed', begin, end)
+        directions = self.values_in_range('wind_direction', begin, end)
 
-        for sensor in self.sensor_set.filter(parameter_type = 'wind_speed').all():
-            for ws in sensor.windspeed_set.all():
-                speeds[ws.date] = ws.value
+        #for sensor in self.sensor_set.filter(parameter_type = 'wind_speed').all():
+            #for ws in sensor.windspeed_set.all():
+                #speeds[ws.date] = ws.value
 
-        for sensor in self.sensor_set.filter(parameter_type = 'wind_direction').all():
-            for wd in sensor.winddirection_set.all():
-                directions[wd.date] = wd.value
+        #for sensor in self.sensor_set.filter(parameter_type = 'wind_direction').all():
+            #for wd in sensor.winddirection_set.all():
+                #directions[wd.date] = wd.value
 
         (small,big) = (speeds,directions) if len(speeds) <= len(directions) else (directions,speeds)
 
@@ -125,7 +124,6 @@ class Station(models.Model):
                 freq_table[key] += 1
             else:
                 freq_table[key] = 0
-
 
         #TODO mejorar esto
         tablestr = " ".join([name for name, h in headings[1:]]) + "\n" # don't display N twice
@@ -157,7 +155,7 @@ class Station(models.Model):
 
         values = {}
 
-        onemin = timedelta(minutes=1)
+        onemin = timedelta(hours=1)
 
         for sensor in sensors:
             qs = sensor.values().filter(date__gte=begin_date, date__lte=end_date).order_by('date')
@@ -170,21 +168,26 @@ class Station(models.Model):
                 idx_next, next_measure = idx + 1, qs[idx+1]
 
                 if measure.date >= begin_date and measure.date <= end_date:
-                    values[measure.date] = measure
+                    values[measure.date] = measure.value
 
                 if next_measure.date >= begin_date and next_measure.date <= end_date:
-                    values[next_measure.date] = next_measure
+                    values[next_measure.date] = next_measure.value
 
                 current_date = measure.date + onemin
 
                 while current_date < next_measure.date:
                     if current_date >= begin_date and current_date <= end_date:
-                        values[current_date] = (measure.value + next_measure.value) / 2.0
+                        if sensor.unit == '?':
+                            values[current_date] = measure.value
+                        else:
+                            values[current_date] = (measure.value + next_measure.value) / 2.0
 
                     print "next = %s" % str(next_measure.date)
                     print "curr = %s" % str(current_date)
 
                     current_date = current_date + onemin
+
+        return values
 
 class Sensor(models.Model):
     class Meta:
