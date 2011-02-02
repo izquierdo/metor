@@ -90,6 +90,8 @@
 
     $(function() {
             /* selector de unidad de temperatura */
+            $("input[name=history_temperature_unit_form_radio]").attr('checked', false);
+
             $("input[name=history_temperature_unit_form_radio]").change(function() {
             });
 
@@ -148,8 +150,8 @@
         <form id="history_temperature_unit_form">
             Unidad:
             <ul>
-                <li><input type="radio" name="history_temperature_unit_form_radio" /></li>
-                <li><input type="radio" name="history_temperature_unit_form_radio" /></li>
+                <li><input type="radio" name="history_temperature_unit_form_radio" id="htufr_c" />C</li>
+                <li><input type="radio" name="history_temperature_unit_form_radio" id="htufr_f" />F</li>
             </ul>
         </form>
     </div>
