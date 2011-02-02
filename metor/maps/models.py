@@ -182,9 +182,6 @@ class Station(models.Model):
                         else:
                             values[current_date] = (measure.value + next_measure.value) / 2.0
 
-                    print "next = %s" % str(next_measure.date)
-                    print "curr = %s" % str(current_date)
-
                     current_date = current_date + onemin
 
         return values
