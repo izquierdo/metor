@@ -61,8 +61,13 @@ def windrose(request, slug = None):
     else:
         end = datetime(9900, 12, 31)
 
+    if 'granularity' in request.GET:
+        granularity = int(request.GET['granularity'])
+    else:
+        granularity = 86400 # one day in seconds
+
     table_file = NamedTemporaryFile(prefix="windrose.", suffix=".dat.tmp")
-    table_file.write(station.get_wind_freqs(begin, end))
+    table_file.write(station.get_wind_freqs(begin, end, granularity))
     table_file.flush()
 
     png_file = NamedTemporaryFile(prefix="windrose.", suffix=".png.tmp")

@@ -54,7 +54,11 @@
     };
 
     var update_windrose = function(){
-        $('#rosa').attr('src', active_station.windrose_url + '?begin=' + $('#begin_date').val() + '&end=' + $('#end_date').val());
+        $('#rosa').attr('src', active_station.windrose_url +
+                '?begin=' + $('#begin_date').val() +
+                '&end=' + $('#end_date').val() +
+                '&granularity=' + $('#granularity').val()
+                );
     };
 
     $(document).unload(GUnload);
@@ -118,6 +122,14 @@
                 Desde <input id="begin_date" type="text" style="width: 10em;">
                 hasta <input id="end_date" type="text" style="width: 10em;">
                 <a href="javascript:update_windrose()">Actualizar</a>
+            </ul>
+            <ul>
+                Granularidad:
+                <select id="granularity" style="width: 10em;">
+                    <option value="60">1 minuto</option>
+                    <option value="3600">1 hora</option>
+                    <option value="86400">1 día</option>
+                </select>
             </ul>
         </form>
         <img id="rosa" alt="Rosa de Viento"/>

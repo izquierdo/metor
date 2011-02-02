@@ -55,7 +55,7 @@ class Station(models.Model):
     last_temperature = property(_get_last_temperature)
     last_windspeed = property(_get_last_windspeed)
 
-    def get_wind_freqs(self, begin=None, end=None):
+    def get_wind_freqs(self, begin=None, end=None, granularity=86400):
         headings = [
             ("N", 0.00),
             ("N", 360.00),
@@ -99,8 +99,8 @@ class Station(models.Model):
 
             assert False # incorrect speed_ranges or speed
 
-        speeds = self.values_in_range('wind_speed', begin, end)
-        directions = self.values_in_range('wind_direction', begin, end)
+        speeds = self.values_in_range('wind_speed', begin, end, granularity)
+        directions = self.values_in_range('wind_direction', begin, end, granularity)
 
         #for sensor in self.sensor_set.filter(parameter_type = 'wind_speed').all():
             #for ws in sensor.windspeed_set.all():
@@ -143,7 +143,7 @@ class Station(models.Model):
     def active_sensors(self):
         return self.sensors.filter(end=None)
 
-    def values_in_range(self, type, begin_date, end_date):
+    def values_in_range(self, type, begin_date, end_date, granularity=86400):
         from fractions import gcd
         from datetime import timedelta
 
@@ -155,7 +155,7 @@ class Station(models.Model):
 
         values = {}
 
-        onemin = timedelta(hours=1)
+        onemin = timedelta(seconds=granularity)
 
         for sensor in sensors:
             qs = sensor.values().filter(date__gte=begin_date, date__lte=end_date).order_by('date')
