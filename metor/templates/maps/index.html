@@ -3,6 +3,7 @@
 {% block extrahead %}
     <script src="{{MEDIA_URL}}/js/jquery-1.4.2.min.js" type="text/javascript"></script>
     <script src="{{MEDIA_URL}}/js/jquery-ui-1.8.7.custom.min.js" type="text/javascript"></script>
+    <script src="{{MEDIA_URL}}/js/jquery.ui.datepicker-es.js" type="text/javascript"></script>
     <link rel="stylesheet" href="{{MEDIA_URL}}/css/jquery-ui-1.8.7.custom.css" type="text/css">
 
     <script type="text/javascript" src="http://www.google.com/jsapi?key=test"></script>
@@ -121,15 +122,17 @@
             <ul>
                 Desde <input id="begin_date" type="text" style="width: 10em;">
                 hasta <input id="end_date" type="text" style="width: 10em;">
-                <a href="javascript:update_windrose()">Actualizar</a>
             </ul>
             <ul>
                 Granularidad:
                 <select id="granularity" style="width: 10em;">
                     <option value="60">1 minuto</option>
                     <option value="3600">1 hora</option>
-                    <option value="86400">1 día</option>
+                    <option value="86400" selected>1 día</option>
                 </select>
+            </ul>
+            <ul>
+                <a href="javascript:update_windrose()">Actualizar</a>
             </ul>
         </form>
         <img id="rosa" alt="Rosa de Viento"/>
