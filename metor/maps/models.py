@@ -87,7 +87,7 @@ class Station(models.Model):
             from math import fabs
 
             for (name, h) in headings:
-                if fabs(h-degrees) < 11.25:
+                if fabs(h-degrees) <= 11.25:
                     return name
 
             assert False # we should always return a heading
