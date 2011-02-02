@@ -89,6 +89,9 @@
     });
 
     $(function() {
+            /* selector de unidad de temperatura */
+            $("input[name=history_temperature_unit_form_radio]").change(function() {
+            });
 
             /* datepickers de la rosa de viento */
             $('#begin_date').val("");
@@ -141,6 +144,15 @@
         <img id="rosa" alt="Rosa de Viento"/>
 
     <h4>Historial</h4>
+    <div id="history_temperature_unit">
+        <form id="history_temperature_unit_form">
+            Unidad:
+            <ul>
+                <li><input type="radio" name="history_temperature_unit_form_radio" /></li>
+                <li><input type="radio" name="history_temperature_unit_form_radio" /></li>
+            </ul>
+        </form>
+    </div>
     <select id="parameter">
        <option value="barometer">Barometer</option>
        <option value="dewpoint">Dewpoint</option>
