@@ -84,11 +84,19 @@
         $('#parameter').change(function(){
             if (active_station != null){
                 show_graph(active_station, $('#parameter').val());
+
+                if ($('#parameter option:selected').val() == 'temperature') {
+                    $('#history_temperature_unit').show();
+                } else {
+                    $('#history_temperature_unit').hide();
+                }
             }
         });
     });
 
     $(function() {
+            /* TODO idealmente obtenemos para cada tipo de medicion las posibles unidades dinamicamente, y
+               colocamos selectores para eso. Por los momentos es solo temperatura */
             /* selector de unidad de temperatura */
             $("input[name=history_temperature_unit_form_radio]").attr('checked', false);
 
@@ -146,15 +154,6 @@
         <img id="rosa" alt="Rosa de Viento"/>
 
     <h4>Historial</h4>
-    <div id="history_temperature_unit">
-        <form id="history_temperature_unit_form">
-            Unidad:
-            <ul>
-                <li><input type="radio" name="history_temperature_unit_form_radio" id="htufr_c" />C</li>
-                <li><input type="radio" name="history_temperature_unit_form_radio" id="htufr_f" />F</li>
-            </ul>
-        </form>
-    </div>
     <select id="parameter">
        <option value="barometer">Barometer</option>
        <option value="dewpoint">Dewpoint</option>
@@ -173,6 +172,15 @@
        <option value="wind_gust">Wind Gust</option>
        <option value="wind_gust_dir">Wind Gust Dir</option>
     </select>
+    <div id="history_temperature_unit">
+        <form id="history_temperature_unit_form">
+            Unidad:
+            <ul>
+                <li><input type="radio" name="history_temperature_unit_form_radio" id="htufr_c" />Celsius</li>
+                <li><input type="radio" name="history_temperature_unit_form_radio" id="htufr_f" />Fahrenheit</li>
+            </ul>
+        </form>
+    </div>
     <div id="chart_div"></div>
 
     </div>
