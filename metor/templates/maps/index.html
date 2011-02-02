@@ -84,8 +84,9 @@
     });
 
     $(function() {
-            $('#begin_date').datepicker();
-            $('#end_date').datepicker();
+
+            $('#begin_date').datepicker({ dateFormat: 'yy-mm-dd' });
+            $('#end_date').datepicker({ dateFormat: 'yy-mm-dd' });
     });
 
     </script>
@@ -116,7 +117,7 @@
             <ul>
                 Desde <input id="begin_date" type="text" style="width: 10em;">
                 hasta <input id="end_date" type="text" style="width: 10em;">
-                <a href="javascript:update_windrose()">Actualizar rango de fechas</a>
+                <a href="javascript:update_windrose()">Actualizar</a>
             </ul>
         </form>
         <img id="rosa" alt="Rosa de Viento"/>
