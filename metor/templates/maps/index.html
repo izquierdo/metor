@@ -18,13 +18,14 @@
     var map;
     var chart;
     var active_station;
+    var active_unit = "";
 
-    var show_graph = function(station, parameter){
+    var show_graph = function(station, parameter, unit){
         if (chart == null){
             chart = new google.visualization.AnnotatedTimeLine(document.getElementById('chart_div'));
         }
         var url = "{% url json_station_values station_id=-1 %}".replace("-1", station.stationId);
-        $.getJSON(url, {"parameter": parameter}, function(data, status){
+        $.getJSON(url, {"parameter": parameter, "unit": unit}, function(data, status){
             var datatable = new google.visualization.DataTable();
             datatable.addColumn('date', 'Date');
             datatable.addColumn('number', parameter);
@@ -51,7 +52,7 @@
         $('#rosa').attr('src', station.windrose_url);
         // $.getJSON(station.status_url, function(data, status){
         // });
-        show_graph(station, $('#parameter').val());
+        show_graph(station, $('#parameter').val(), active_unit);
     };
 
     var update_windrose = function(){
@@ -83,13 +84,13 @@
 
         $('#parameter').change(function(){
             if (active_station != null){
-                show_graph(active_station, $('#parameter').val());
-
                 if ($('#parameter option:selected').val() == 'temperature') {
                     $('#history_temperature_unit').show();
                 } else {
                     $('#history_temperature_unit').hide();
                 }
+
+                show_graph(active_station, $('#parameter').val(), active_unit);
             }
         });
     });
@@ -98,9 +99,11 @@
             /* TODO idealmente obtenemos para cada tipo de medicion las posibles unidades dinamicamente, y
                colocamos selectores para eso. Por los momentos es solo temperatura */
             /* selector de unidad de temperatura */
-            $("input[name=history_temperature_unit_form_radio]").attr('checked', false);
+            $("input[name=chart_unit]").attr('checked', false);
 
-            $("input[name=history_temperature_unit_form_radio]").change(function() {
+            $("input[name=chart_unit]").change(function() {
+                active_unit = $("input[name=chart_unit]:checked").attr('value');
+                show_graph(active_station, $('#parameter').val(), active_unit);
             });
 
             /* datepickers de la rosa de viento */
@@ -176,8 +179,8 @@
         <form id="history_temperature_unit_form">
             Unidad:
             <ul>
-                <li><input type="radio" name="history_temperature_unit_form_radio" id="htufr_c" />Celsius</li>
-                <li><input type="radio" name="history_temperature_unit_form_radio" id="htufr_f" />Fahrenheit</li>
+                <li><input type="radio" name="chart_unit" id="chart_unit_celsius" value="celsius" />Celsius</li>
+                <li><input type="radio" name="chart_unit" id="chart_unit_fahrenheit" value="fahrenheit" />Fahrenheit</li>
             </ul>
         </form>
     </div>

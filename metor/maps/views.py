@@ -21,6 +21,7 @@ def index(request):
 def json_station_values(request, station_id):
     station = get_object_or_404(Station, stationId = station_id)
     parameter = request.GET.get("parameter")
+    unit = request.GET.get("unit")
 
     result = {}
     model = parameter2model(parameter)
