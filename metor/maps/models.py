@@ -99,16 +99,14 @@ class Station(models.Model):
 
             assert False # incorrect speed_ranges or speed
 
-        speeds = self.values_in_range('wind_speed', begin, end, granularity)
-        directions = self.values_in_range('wind_direction', begin, end, granularity)
+        speeds = {}
+        directions = {}
 
-        #for sensor in self.sensor_set.filter(parameter_type = 'wind_speed').all():
-            #for ws in sensor.windspeed_set.all():
-                #speeds[ws.date] = ws.value
+        for ws in self.values_in_range('wind_speed', begin, end, granularity):
+            speeds[ws.date] = ws.value
 
-        #for sensor in self.sensor_set.filter(parameter_type = 'wind_direction').all():
-            #for wd in sensor.winddirection_set.all():
-                #directions[wd.date] = wd.value
+        for wd in self.values_in_range('wind_direction', begin, end, granularity):
+            directions[wd.date] = wd.value
 
         (small,big) = (speeds,directions) if len(speeds) <= len(directions) else (directions,speeds)
 
@@ -153,13 +151,14 @@ class Station(models.Model):
             if sensor.begin <= end_date and (sensor.end is None or sensor.end >= begin_date):
                 sensors.append(sensor)
 
-        values = {}
+        values = []
 
         onemin = timedelta(seconds=granularity)
 
         for sensor in sensors:
             qs = sensor.values().filter(date__gte=begin_date, date__lte=end_date).order_by('date')
             sensor_values_count = qs.count()
+            first_time_through = True
 
             for idx, measure in enumerate(qs):
                 if idx + 1 == sensor_values_count:
@@ -167,22 +166,34 @@ class Station(models.Model):
 
                 idx_next, next_measure = idx + 1, qs[idx+1]
 
-                if measure.date >= begin_date and measure.date <= end_date:
-                    values[measure.date] = measure.value
-
-                if next_measure.date >= begin_date and next_measure.date <= end_date:
-                    values[next_measure.date] = next_measure.value
+                if first_time_through:
+                    if measure.date >= begin_date and measure.date <= end_date:
+                        values.append(measure)
+                        first_time_through = False
 
                 current_date = measure.date + onemin
 
                 while current_date < next_measure.date:
                     if current_date >= begin_date and current_date <= end_date:
+                        avg_measure = measure
+                        avg_measure.date = current_date
+
+                        # TODO lo que en verdad hay que revisar es que sea una unidad numerica
                         if sensor.unit == '?':
-                            values[current_date] = measure.value
+                            values.append(avg_measure)
                         else:
-                            values[current_date] = (measure.value + next_measure.value) / 2.0
+                            avg_measure.value = (measure.value + next_measure.value) / 2.0
+                            values.append(avg_measure)
 
                     current_date = current_date + onemin
+
+                if next_measure.date >= begin_date and next_measure.date <= end_date:
+                    # Si es el ultimo valor no vamos a entrar en el ciclo otra
+                    # vez. Si no es el ultimo entonces lo agregaremos en el
+                    # proximo ciclo si no hemos agregado antes
+                    if idx + 1 == sensor_values_count or not first_time_through:
+                        values.append(next_measure)
+
 
         return values
 
