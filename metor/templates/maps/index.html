@@ -50,8 +50,8 @@
 
         $('#datosestacion').show();
         $('#rosa').attr('src', station.windrose_url);
-        // $.getJSON(station.status_url, function(data, status){
-        // });
+        $('#station_name').text(station.name);
+
         show_graph(station, $('#parameter').val(), active_unit);
     };
 
@@ -131,6 +131,8 @@
 
     <div style="display: none" id="datosestacion">
         <h3 id="estacionid">Nombre</h3>
+
+        <div id="station_name"></div>
 
         <ul id="info">
         </ul>
