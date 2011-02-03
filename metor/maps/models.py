@@ -55,7 +55,7 @@ class Station(models.Model):
     last_temperature = property(_get_last_temperature)
     last_windspeed = property(_get_last_windspeed)
 
-    def get_wind_freqs(self, begin=None, end=None, granularity=86400):
+    def get_wind_freqs(self, begin=None, end=None, granularity=None):
         headings = [
             ("N", 0.00),
             ("N", 360.00),
@@ -141,7 +141,7 @@ class Station(models.Model):
     def active_sensors(self):
         return self.sensors.filter(end=None)
 
-    def values_in_range(self, type, begin_date, end_date, granularity=86400):
+    def values_in_range(self, type, begin_date, end_date, granularity=None):
         from fractions import gcd
         from datetime import timedelta
 
@@ -153,7 +153,8 @@ class Station(models.Model):
 
         values = []
 
-        onemin = timedelta(seconds=granularity)
+        if granularity:
+            onemin = timedelta(seconds=granularity)
 
         for sensor in sensors:
             qs = sensor.values().filter(date__gte=begin_date, date__lte=end_date).order_by('date')
@@ -171,21 +172,22 @@ class Station(models.Model):
                         values.append(measure)
                         first_time_through = False
 
-                current_date = measure.date + onemin
-
-                while current_date < next_measure.date:
-                    if current_date >= begin_date and current_date <= end_date:
-                        avg_measure = measure
-                        avg_measure.date = current_date
-
-                        # TODO lo que en verdad hay que revisar es que sea una unidad numerica
-                        if sensor.unit == '?':
-                            values.append(avg_measure)
-                        else:
-                            avg_measure.value = (measure.value + next_measure.value) / 2.0
-                            values.append(avg_measure)
-
-                    current_date = current_date + onemin
+                if granularity:
+                    current_date = measure.date + onemin
+    
+                    while current_date < next_measure.date:
+                        if current_date >= begin_date and current_date <= end_date:
+                            avg_measure = measure
+                            avg_measure.date = current_date
+    
+                            # TODO lo que en verdad hay que revisar es que sea una unidad numerica
+                            if sensor.unit == '?':
+                                values.append(avg_measure)
+                            else:
+                                avg_measure.value = (measure.value + next_measure.value) / 2.0
+                                values.append(avg_measure)
+    
+                        current_date = current_date + onemin
 
                 if next_measure.date >= begin_date and next_measure.date <= end_date:
                     # Si es el ultimo valor no vamos a entrar en el ciclo otra

@@ -11,7 +11,7 @@ from django.template import RequestContext
 import rpy2.robjects as robjects
 
 from models import Station, parameter2model
-
+from datetime import datetime
 
 def index(request):
     stations = Station.objects.all()
@@ -23,9 +23,25 @@ def json_station_values(request, station_id):
     parameter = request.GET.get("parameter")
     unit = request.GET.get("unit")
 
+    if 'begin' in request.GET:
+        begin = datetime.strptime(request.GET['begin'], "%Y-%m-%d")
+    else:
+        begin = datetime(1900, 1, 1)
+
+    if 'end' in request.GET:
+        end = datetime.strptime(request.GET['end'], "%Y-%m-%d")
+    else:
+        end = datetime(9900, 12, 31)
+
+
     result = {}
-    model = parameter2model(parameter)
-    values = model.objects.filter(sensor__station=station).order_by("-date")[:2000]
+    all_values = station.values_in_range(parameter, begin, end)
+
+    if len(all_values) < 2000:
+        values = all_values
+    else:
+        values = all_values[len(all_values)-2000:]
+
     result["values"] = [(x.date.year, x.date.month, x.date.day,
                           x.date.hour, x.date.minute, x.date.second,
                           x.value) for x in values]
