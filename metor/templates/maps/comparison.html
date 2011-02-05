@@ -20,7 +20,12 @@
         var select_station = $('#select_station__' + interface_id);
         var div_station_display = $('#div_station_display__' + interface_id);
 
+        var input_windrose_begin = $('#input_windrose_begin__' + interface_id);
+        var input_windrose_end = $('#input_windrose_end__' + interface_id);
+
         select_station.val("");
+        input_windrose_begin.datepicker();
+        input_windrose_end.datepicker();
 
         select_station.change(function() {
                 if (select_station.val() == "") {
