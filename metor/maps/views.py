@@ -18,6 +18,11 @@ def index(request):
     return render_to_response('maps/index.html', {'stations' : stations},
                               context_instance=RequestContext(request))
 
+def station_comparison(request):
+    stations = Station.objects.all()
+    return render_to_response('maps/comparison.html', {'stations' : stations},
+                              context_instance=RequestContext(request))
+
 def json_station_values(request, station_id):
     station = get_object_or_404(Station, stationId = station_id)
     parameter = request.GET.get("parameter")
