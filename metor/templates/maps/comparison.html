@@ -20,6 +20,8 @@
         var select_station = $('#select_station__' + interface_id);
         var div_station_display = $('#div_station_display__' + interface_id);
 
+        select_station.val("");
+
         select_station.change(function() {
                 display_station(select_station.val(), interface_id);
         });
@@ -35,7 +37,7 @@
 
 {% block content %}
 {% for id in display_ids %}
-<div id="div_station__{{id}}" style="border-style: solid; border-width: 1px;">
+<div id="div_station__{{id}}" style="border-style: solid; border-width: 1px; float: {% cycle 'left' 'right' %};">
 
     <form>
         <select id="select_station__{{id}}" style="width: 20em;">
@@ -54,8 +56,5 @@
 
 </div>
 
-<br/>
-<hr>
-<br/>
 {% endfor %}
 {% endblock %}
