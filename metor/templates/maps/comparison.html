@@ -7,11 +7,22 @@
 <link rel="stylesheet" href="{{MEDIA_URL}}/css/jquery-ui-1.8.7.custom.css" type="text/css">
 
 <script type="text/javascript">
-    function StationInterface(interface_id) {
-        this.testext = $('#epale_' + interface_id);
+    function display_station(station_id, interface_id) {
+        var img_windrose = $('#img_windrose__' + interface_id);
 
-        this.testext.val("NO");
-        this.testext.datepicker();
+        /* TODO: fix este DRY violation con el url */
+        $.getJSON('/json/stations/' + station_id + '/', function(station, status){
+            img_windrose.attr('src', station.windrose_url);
+        });
+    }
+
+    function StationInterface(interface_id) {
+        var select_station = $('#select_station__' + interface_id);
+        var div_station_display = $('#div_station_display__' + interface_id);
+
+        select_station.change(function() {
+                display_station(select_station.val(), interface_id);
+        });
     }
 
     $(function() {
@@ -26,15 +37,20 @@
 {% for id in display_ids %}
 <div id="div_station__{{id}}" style="border-style: solid; border-width: 1px;">
 
-<select id="select_station__{{id}}" style="width: 20em;">
-    <option value="" selected />
-    {% for station in stations %}
-    <option value="{{station.id}}">{{station.name}}</option>
-    {% endfor %}
-</select>
+    <form>
+        <select id="select_station__{{id}}" style="width: 20em;">
+            <option value="" selected />
+            {% for station in stations %}
+            <option value="{{station.stationId}}">{{station.name}}</option>
+            {% endfor %}
+        </select>
+    </form>
 
-<div id="div_station_display__{{id}}">
-</div>
+    <div id="div_station_display__{{id}}">
+        <div id="div_windrose_display__{{id}}">
+            <img id="img_windrose__{{id}}" alt="Rosa de Viento"/>
+        </div>
+    </div>
 
 </div>
 

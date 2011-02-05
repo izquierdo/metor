@@ -64,6 +64,15 @@ def json_stations(request, station_id=None):
             s["windrose_url"] = reverse('windrose', kwargs={'slug': station.slug})
             stations.append(s)
         return HttpResponse(json.dumps(stations), mimetype='application/json')
+    else:
+        station = get_object_or_404(Station, stationId = station_id)
+        attrs = ["stationId", "name", "longitude", "latitude"]
+
+        s = dict((att, getattr(station, att)) for att in attrs)
+        s["status_url"] = reverse('json_station_values', args=[station.stationId])
+        s["windrose_url"] = reverse('windrose', kwargs={'slug': station.slug})
+
+        return HttpResponse(json.dumps(s), mimetype='application/json')
 
 def windrose(request, slug = None):
     if not slug:
