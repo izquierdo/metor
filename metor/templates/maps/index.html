@@ -83,6 +83,8 @@
         }
 
         $('#parameter').change(function(){
+            $("input[name=chart_unit]").attr('checked', false);
+
             if (active_station != null){
                 if ($('#parameter option:selected').val() == 'temperature') {
                     $('#history_temperature_unit').show();

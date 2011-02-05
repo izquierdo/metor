@@ -33,9 +33,8 @@ def json_station_values(request, station_id):
     else:
         end = datetime(9900, 12, 31)
 
-
     result = {}
-    all_values = station.values_in_range(parameter, begin, end)
+    all_values = station.values_in_range(parameter, begin, end, unit=unit)
 
     if len(all_values) < 2000:
         values = all_values

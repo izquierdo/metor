@@ -141,9 +141,23 @@ class Station(models.Model):
     def active_sensors(self):
         return self.sensors.filter(end=None)
 
-    def values_in_range(self, type, begin_date, end_date, granularity=None):
+    def values_in_range(self, type, begin_date, end_date, granularity=None, unit=None):
         from fractions import gcd
         from datetime import timedelta
+
+        def convert_unit(measurement, current_unit):
+            # TODO hacer esto de otra forma
+            if not unit:
+                return measurement
+
+            if unit == "celsius":
+                if current_unit == "F":
+                    measurement.value = (measurement.value-32.0)*(5.0/9.0)
+            elif unit == "fahrenheit":
+                if current_unit == "C":
+                    measurement.value = (measurement.value*(9.0/5.0))+32.0
+
+            return measurement
 
         sensors = []
 
@@ -161,7 +175,9 @@ class Station(models.Model):
             sensor_values_count = qs.count()
             first_time_through = True
 
-            for idx, measure in enumerate(qs):
+            converted_measures = map(lambda m : convert_unit(m, sensor.unit), qs)
+
+            for idx, measure in enumerate(converted_measures):
                 if idx + 1 == sensor_values_count:
                     break
 
