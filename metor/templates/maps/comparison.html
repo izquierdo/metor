@@ -23,6 +23,12 @@
         select_station.val("");
 
         select_station.change(function() {
+                if (select_station.val() == "") {
+                    div_station_display.hide();
+                } else {
+                    div_station_display.show();
+                }
+
                 display_station(select_station.val(), interface_id);
         });
     }
@@ -40,7 +46,8 @@
 <div id="div_station__{{id}}" style="border-style: solid; border-width: 1px; float: {% cycle 'left' 'right' %};">
 
     <form>
-        <select id="select_station__{{id}}" style="width: 20em;">
+        <h3>Estación:</h3>
+        <select id="select_station__{{id}}" style="width: 10em;">
             <option value="" selected />
             {% for station in stations %}
             <option value="{{station.stationId}}">{{station.name}}</option>
@@ -48,10 +55,41 @@
         </select>
     </form>
 
-    <div id="div_station_display__{{id}}">
+    <div id="div_station_display__{{id}}" style="display: none;">
+        {% comment %}
+        ############################
+        Display de la rosa de viento
+        ############################
+        {% endcomment %}
+
         <div id="div_windrose_display__{{id}}">
+            <h4>Rosa del Viento</h4>
+
+            <form>
+                <ul>
+                    Desde <input id="input_windrose_begin__{{id}}" type="text" style="width: 10em;">
+                    hasta <input id="input_windrose_end__{{id}}" type="text" style="width: 10em;">
+                </ul>
+                <ul>
+                    Granularidad:
+                    <select id="input_windrose_granularity__{{id}}" style="width: 10em;">
+                        <option value="60">1 minuto</option>
+                        <option value="3600">1 hora</option>
+                        <option value="86400" selected>1 día</option>
+                    </select>
+                </ul>
+                <ul>
+                    <a href="javascript:update_windrose()">Actualizar</a>
+                </ul>
+            </form>
             <img id="img_windrose__{{id}}" alt="Rosa de Viento"/>
         </div>
+
+        {% comment %}
+        #####################
+        Display de los charts
+        #####################
+        {% endcomment %}
     </div>
 
 </div>
