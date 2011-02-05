@@ -1,5 +1,45 @@
 {% extends "base.html" %}
 
+{% block extrahead %}
+<script src="{{MEDIA_URL}}/js/jquery-1.4.2.min.js" type="text/javascript"></script>
+<script src="{{MEDIA_URL}}/js/jquery-ui-1.8.7.custom.min.js" type="text/javascript"></script>
+<script src="{{MEDIA_URL}}/js/jquery.ui.datepicker-es.js" type="text/javascript"></script>
+<link rel="stylesheet" href="{{MEDIA_URL}}/css/jquery-ui-1.8.7.custom.css" type="text/css">
+
+<script type="text/javascript">
+    function StationInterface(interface_id) {
+        this.testext = $('#epale_' + interface_id);
+
+        this.testext.val("NO");
+        this.testext.datepicker();
+    }
+
+    $(function() {
+            {% for id in display_ids %}
+            var si_{{id}} = new StationInterface({{id}});
+            {% endfor %}
+    });
+</script>
+{% endblock %}
+
 {% block content %}
-Comparacion de estaciones
+{% for id in display_ids %}
+<div id="div_station__{{id}}" style="border-style: solid; border-width: 1px;">
+
+<select id="select_station__{{id}}" style="width: 20em;">
+    <option value="" selected />
+    {% for station in stations %}
+    <option value="{{station.id}}">{{station.name}}</option>
+    {% endfor %}
+</select>
+
+<div id="div_station_display__{{id}}">
+</div>
+
+</div>
+
+<br/>
+<hr>
+<br/>
+{% endfor %}
 {% endblock %}
