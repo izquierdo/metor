@@ -83,12 +83,12 @@ def windrose(request, slug = None):
 
     from datetime import datetime
 
-    if 'begin' in request.GET:
+    if 'begin' in request.GET and request.GET.get('begin'):
         begin = datetime.strptime(request.GET['begin'], "%Y-%m-%d")
     else:
         begin = datetime(1900, 1, 1)
 
-    if 'end' in request.GET:
+    if 'end' in request.GET and request.GET.get('end'):
         end = datetime.strptime(request.GET['end'], "%Y-%m-%d")
     else:
         end = datetime(9900, 12, 31)

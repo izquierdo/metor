@@ -7,12 +7,30 @@
 <link rel="stylesheet" href="{{MEDIA_URL}}/css/jquery-ui-1.8.7.custom.css" type="text/css">
 
 <script type="text/javascript">
-    function display_station(station_id, interface_id) {
+    var interfaces = {};
+
+    function update_windrose(interface_id) {
         var img_windrose = $('#img_windrose__' + interface_id);
 
-        /* TODO: fix este DRY violation con el url */
+        var begin_date = $('#input_windrose_begin__' + interface_id).val();
+        var end_date = $('#input_windrose_end__' + interface_id).val();
+        var granularity = $('#input_windrose_granularity__' + interface_id).val();
+
+        img_windrose.attr('src',
+                interfaces[interface_id].station.windrose_url +
+                '?begin=' + begin_date +
+                '&end=' + end_date +
+                '&granularity=' + granularity
+        );
+    }
+
+    function display_station(station_id, interface_id) {
+        /* TODO: fix este DRY violation del url */
         $.getJSON('/json/stations/' + station_id + '/', function(station, status){
-            img_windrose.attr('src', station.windrose_url);
+            interfaces[interface_id] = {};
+            interfaces[interface_id].station = station;
+
+            update_windrose(interface_id);
         });
     }
 
@@ -23,9 +41,13 @@
         var input_windrose_begin = $('#input_windrose_begin__' + interface_id);
         var input_windrose_end = $('#input_windrose_end__' + interface_id);
 
+        input_windrose_begin.val("");
+        input_windrose_begin.datepicker({ dateFormat: 'yy-mm-dd' });
+
+        input_windrose_end.val("");
+        input_windrose_end.datepicker({ dateFormat: 'yy-mm-dd' });
+
         select_station.val("");
-        input_windrose_begin.datepicker();
-        input_windrose_end.datepicker();
 
         select_station.change(function() {
                 if (select_station.val() == "") {
@@ -48,7 +70,7 @@
 
 {% block content %}
 {% for id in display_ids %}
-<div id="div_station__{{id}}" style="border-style: solid; border-width: 1px; float: {% cycle 'left' 'right' %};">
+<div id="div_station__{{id}}" style="width: 514px; border-style: solid; border-width: 1px; float: {% cycle 'left' 'right' %};">
 
     <form>
         <h3>Estación:</h3>
@@ -84,7 +106,7 @@
                     </select>
                 </ul>
                 <ul>
-                    <a href="javascript:update_windrose()">Actualizar</a>
+                    <a href="javascript:update_windrose({{id}})">Actualizar</a>
                 </ul>
             </form>
             <img id="img_windrose__{{id}}" alt="Rosa de Viento"/>
