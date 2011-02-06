@@ -24,9 +24,10 @@
         );
     }
 
-    function display_station(station_id, interface_id) {
-        /* TODO: fix este DRY violation del url */
-        $.getJSON('/json/stations/' + station_id + '/', function(station, status){
+    function load_station(station_id, interface_id) {
+        var url = "{% url json_station station_id=-1 %}".replace("-1", station_id);
+
+        $.getJSON(url, function(station, status){
             interfaces[interface_id] = {};
             interfaces[interface_id].station = station;
 
