@@ -23,7 +23,7 @@
     $(document).ready(function(){
         if (GBrowserIsCompatible()) {
             map = new GMap2(document.getElementById("map_canvas"));
-            map.setCenter(new GLatLng({{station.latitude}}, {{station.longitude}}), 5);
+            map.setCenter(new GLatLng({{station.latitude}}, {{station.longitude}}), 4);
             map.setUIToDefault();
             var marker = new GMarker(new GLatLng({{station.latitude}},
                                                  {{station.longitude}}));
@@ -39,6 +39,7 @@
 
 
 {% block content %}
+<div id="map_canvas" style="width: 30%; border: 1px solid #999; height: 200px; float: right;"></div>
 <h2>Estación {{station.name}}</h2>
 
 <ul>
@@ -74,6 +75,3 @@
 
 {% endblock %}
 
-{% block sidebar %}
-<div id="map_canvas" style="width: 100%; border: 1px solid #999; height: 200px"></div>
-{% endblock %}
