@@ -7,8 +7,26 @@ urlpatterns = patterns('maps.views',
     (r'^$', 'index'),
     url(r'^estacion/(?P<slug>\w+)/rosa_viento\.png$', 'windrose', name="windrose"),
     url(r'^estacion/(?P<object_id>\d+)/grid/(?P<parameter>[a-z_]+)/', 'grid', name="grid"),
+    url(r'^estacion/(?P<object_id>\d+)/csv/(?P<parameter>[a-z_]+)/', 'csv', name="grid"),
     url(r'^json/stations/$', 'json_stations', name="json_stations"),
     url(r'^json/stations/(?P<station_id>-?\d+)/values/$', 'json_station_values', name="json_station_values"),
+)
+
+urlpatterns += patterns('django.views.generic.simple',
+    url(r'^download/$', 'direct_to_template', {"template": "maps/download.html"}),
+    url(r'^download/rdf/$', 'direct_to_template', {"template": "maps/download-rdf.html"}),
+    url(r'^download/csv/$', 'direct_to_template', {"template": "maps/download-select.html",
+                                                   "extra_context": {
+                                                          "type": "csv",
+                                                          "stations":  Station.objects.all()
+                                                          }
+                                                   }),
+    url(r'^download/grid/$', 'direct_to_template', {"template": "maps/download-select.html",
+                                                   "extra_context": {
+                                                          "type": "csv",
+                                                          "stations":  Station.objects.all()
+                                                          }
+                                                   }),
 )
 
 # Station CRUD

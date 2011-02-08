@@ -112,6 +112,53 @@ def windrose(request, slug = None):
 def grid(request, object_id, parameter):
     station = get_object_or_404(Station, stationId = object_id)
     #result = station.name + " " + parameter
-    results = station.values_in_range(parameter, datetime(2009,1,1), datetime(2010,1,1), 60)
+
+    if 'granularity' in request.GET:
+        granularity = int(request.GET['granularity'])
+    else:
+        granularity = 86400 # one day in seconds
+
+    if 'start' in request.GET:
+        start = datetime.strptime(request.GET['start'], "%Y-%m-%d")
+    else:
+        start = datetime(1900, 1, 1)
+
+    if 'end' in request.GET:
+        end = datetime.strptime(request.GET['end'], "%Y-%m-%d")
+    else:
+        end = datetime(9900, 12, 31)
+
+    if end < start:
+        start, end = end, start
+
+    results = station.values_in_range(parameter, start, end, granularity)
     results = "\n".join([str(x.date) + " " + str(x.value) for x in results])
     return HttpResponse(results, mimetype='text/plain')
+
+def csv(request, object_id, parameter):
+    station = get_object_or_404(Station, stationId = object_id)
+    #result = station.name + " " + parameter
+
+    if 'granularity' in request.GET:
+        granularity = int(request.GET['granularity'])
+    else:
+        granularity = 86400 # one day in seconds
+
+    if 'start' in request.GET:
+        start = datetime.strptime(request.GET['start'], "%Y-%m-%d")
+    else:
+        start = datetime(1900, 1, 1)
+
+    if 'end' in request.GET:
+        end = datetime.strptime(request.GET['end'], "%Y-%m-%d")
+    else:
+        end = datetime(9900, 12, 31)
+
+    if end < start:
+        start, end = end, start
+
+    results = station.values_in_range(parameter, start, end, granularity)
+    results = "\n".join(str(x.date) + "," + str(x.value) for x in results)
+    r = HttpResponse(results, mimetype='text/plain')
+    r['Content-Disposition'] = "attachment; filename=%s-%s.csv" % (station.name, parameter)
+    return r

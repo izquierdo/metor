@@ -13,7 +13,7 @@
   visibility: hidden;
 }
 
-.clear { 
+.clear {
   display: inline-table;
 }
 
@@ -105,13 +105,13 @@ button {
 	float: left;
 }
 
-#content, #footer .lft {	
+#content, #footer .lft {
 	padding-right: 5em;
 	width: 55em;
 }
 
 #nav, #sidebar, #footer .rgt {
-	float: right;	
+	float: right;
 }
 
 #sidebar, #footer .rgt {
@@ -142,7 +142,7 @@ button {
 
 #nav a {
 	color: #a7a7a7;
-	text-decoration: none;	
+	text-decoration: none;
 }
 
 #nav a:hover, #nav a:focus, #nav span {
@@ -232,8 +232,8 @@ button {
 	font-weight: bold;
 }
 
-#content input,
-#content textarea {	
+#content input[type="text"],
+#content textarea {
 	padding: .25em .5em;
 	width: 39em;
 }
@@ -241,7 +241,7 @@ button {
 #middle img {
 	border: 1px solid #f0f0f0;
 	display: block;
-	padding: 1px;	
+	padding: 1px;
 }
 
 #middle .img-left {
@@ -291,7 +291,7 @@ button {
 #sidebar ul li,
 #sidebar ul li span {
 	background: transparent url('../images/li_dot1.gif') left .75em no-repeat;
-	display: block;	
+	display: block;
 	color: #686868;
 	padding: .6em 0 .6em 18px;
 	text-decoration: none;
