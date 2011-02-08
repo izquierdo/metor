@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+<h2>Estaciones</h2>
 <ul id="station-list">
   {% for station in station_list %}
   <li{% if forloop.last %} class="last"{% endif %}>

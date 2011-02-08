@@ -108,3 +108,10 @@ def windrose(request, slug = None):
     png_file.close()
 
     return response
+
+def grid(request, object_id, parameter):
+    station = get_object_or_404(Station, stationId = object_id)
+    #result = station.name + " " + parameter
+    results = station.values_in_range(parameter, datetime(2009,1,1), datetime(2010,1,1), 60)
+    results = "\n".join([str(x.date) + " " + str(x.value) for x in results])
+    return HttpResponse(results, mimetype='text/plain')
