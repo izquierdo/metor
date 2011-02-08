@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<ul id="station-list">
+  {% for station in station_list %}
+  <li{% if forloop.last %} class="last"{% endif %}>
+    <a href="{{ station.get_absolute_url }}" alt="{{ station }}">{{ station }}</a> -
+    [<a href="{% url station_update station.stationId %}">editar</a> |
+    <a href="{% url station_delete station.stationId %}">borrar</a>]
+  </li>
+  {% empty %}
+  <li class="empty-list">Actualmente no hay estaciones.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

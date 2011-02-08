@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<p class="big" style="font-size:24px">
+  ¿Estás seguro de querer eliminar la estacion <strong>{{ station }}</strong>?
+</p>
+
+<form method="post" action="{% url station_delete station.stationId %}" style="margin: 60px 0">
+  <input type="submit" name="si" value="Sí" /> o
+  <a href="{% url station_list %}" alt="Lista de estaciones">No</a>
+</form>
+
+{% endblock %}

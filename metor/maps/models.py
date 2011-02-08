@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse
 from django.db import models
 from django_extensions.db.fields import AutoSlugField
 
@@ -54,6 +55,9 @@ class Station(models.Model):
 
     last_temperature = property(_get_last_temperature)
     last_windspeed = property(_get_last_windspeed)
+
+    def get_absolute_url(self):
+        return reverse('station_detail', args=[self.stationId])
 
     def get_wind_freqs(self, begin=None, end=None, granularity=None):
         headings = [
