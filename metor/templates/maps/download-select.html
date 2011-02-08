@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+    <script src="{{MEDIA_URL}}/js/jquery-1.4.2.min.js" type="text/javascript"></script>
+    <script src="{{MEDIA_URL}}/js/jquery-ui-1.8.7.custom.min.js" type="text/javascript"></script>
+    <script src="{{MEDIA_URL}}/js/jquery.ui.datepicker-es.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="{{MEDIA_URL}}/css/jquery-ui-1.8.7.custom.css" type="text/css">
+
+    <script type="text/javascript">
+    $(function() {
+        $('#begin_date').datepicker({ dateFormat: 'yy-mm-dd' });
+        $('#end_date').datepicker({ dateFormat: 'yy-mm-dd' });
+        $('#download').click(function(){
+            var station = $('#station').val();
+            var param = $('#parameter').val();
+            var format = $('#format').val();
+            var gran = $('#granularity').val();
+            var start= $('#begin_date').val();
+            var end= $('#end_date').val();
+
+            var url = "/estacion/"+station+"/"+format+"/"+param+"/?granularity="+gran;
+            if (start) {
+                url += "&start=" + start;
+            }
+            if (end) {
+                url += "&end=" + end;
+            }
+            console.log(url);
+            top.location = url;
+        });
+    });
+    </script>
+{% endblock %}
+
+
+
+{% block content %}
+<h2>Decarga de Datos {{ type|upper }} </h2>
+<table border="0">
+<tr>
+<td>Estacion: </td><td style="width: 100%"><select id="station">
+  {% for s in stations %}
+  <option value="{{s.stationId}}">{{s.name}}</option>
+  {% endfor %}
+     </select>
+</td></tr>
+
+<tr><td>Parámetro</td><td>     <select id="parameter">
+       <option value="barometer">Barometer</option>
+       <option value="dewpoint">Dewpoint</option>
+       <option value="et">ET</option>
+       <option value="heat_index">Heat Index</option>
+       <option value="humidity">Humidity</option>
+       <option value="pressure">Pressure</option>
+       <option value="radiation">Radiation</option>
+       <option value="rain">Rain</option>
+       <option value="rain_rate">Rain Rate</option>
+       <option value="temperature" selected="">Temperature</option>
+       <option value="uv">Uv</option>
+       <option value="windchill">Windchill</option>
+       <option value="wind_direction">Wind Direction</option>
+       <option value="wind_speed">Wind Speed</option>
+       <option value="wind_gust">Wind Gust</option>
+       <option value="wind_gust_dir">Wind Gust Dir</option>
+    </select>
+</td></tr>
+
+<tr><td>Desde</td><td> <input id="begin_date" type="text" style="width: 10em;"></td></tr>
+<tr><td>Hasta </td><td><input id="end_date" type="text" style="width: 10em;"></td></tr>
+<tr><td>Granularidad</td><td>     <select id="granularity">
+       <option value="1">Segundo</option>
+       <option value="60">Minuto</option>
+       <option value="3600">Hora</option>
+       <option value="86400">Día</option>
+    </select>
+</td></tr>
+
+<tr><td></td><td><input type="hidden" id="format" value="{{type}}" name="format" />
+<input type="button" id="download" value="Descargar"/>
+</td></tr>
+</table>
+
+{% endblock %}
+
