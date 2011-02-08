@@ -8,7 +8,7 @@
 
 <script type="text/javascript" src="http://www.google.com/jsapi?key=test"></script>
 <script type="text/javascript">
-    google.load("maps", "2");
+    /*google.load("maps", "2");*/
     /*google.load("jquery", "1.4.2");*/
     google.load('visualization', '1', {'packages':['annotatedtimeline']});
 </script>
@@ -57,7 +57,7 @@
             var rows = []
             for (var i=0; i < data.values.length; i++){
                 var v = data.values[i];
-                rows[i] = [new Date(v[0],v[1],v[2],v[3],v[4],v[5]), v[6]];
+                rows[i] = [new Date(v[0],v[1]-1,v[2],v[3],v[4],v[5]), v[6]];
             }
             datatable.addRows(rows);
             interfaces[interface_id].chart.draw(datatable);
