@@ -18,17 +18,24 @@ def index(request):
     return render_to_response('maps/index.html', {'stations' : stations},
                               context_instance=RequestContext(request))
 
+def station_comparison(request):
+    stations = Station.objects.all()
+    return render_to_response(
+            'maps/comparison.html',
+            {'stations' : stations, 'display_ids' : xrange(2)},
+            context_instance=RequestContext(request))
+
 def json_station_values(request, station_id):
     station = get_object_or_404(Station, stationId = station_id)
     parameter = request.GET.get("parameter")
     unit = request.GET.get("unit")
 
-    if 'begin' in request.GET:
+    if 'begin' in request.GET and request.GET.get('begin'):
         begin = datetime.strptime(request.GET['begin'], "%Y-%m-%d")
     else:
         begin = datetime(1900, 1, 1)
 
-    if 'end' in request.GET:
+    if 'end' in request.GET and request.GET.get('end'):
         end = datetime.strptime(request.GET['end'], "%Y-%m-%d")
     else:
         end = datetime(9900, 12, 31)
@@ -57,6 +64,15 @@ def json_stations(request, station_id=None):
             s["windrose_url"] = reverse('windrose', kwargs={'slug': station.slug})
             stations.append(s)
         return HttpResponse(json.dumps(stations), mimetype='application/json')
+    else:
+        station = get_object_or_404(Station, stationId = station_id)
+        attrs = ["stationId", "name", "longitude", "latitude"]
+
+        s = dict((att, getattr(station, att)) for att in attrs)
+        s["status_url"] = reverse('json_station_values', args=[station.stationId])
+        s["windrose_url"] = reverse('windrose', kwargs={'slug': station.slug})
+
+        return HttpResponse(json.dumps(s), mimetype='application/json')
 
 def windrose(request, slug = None):
     if not slug:
@@ -67,12 +83,12 @@ def windrose(request, slug = None):
 
     from datetime import datetime
 
-    if 'begin' in request.GET:
+    if 'begin' in request.GET and request.GET.get('begin'):
         begin = datetime.strptime(request.GET['begin'], "%Y-%m-%d")
     else:
         begin = datetime(1900, 1, 1)
 
-    if 'end' in request.GET:
+    if 'end' in request.GET and request.GET.get('end'):
         end = datetime.strptime(request.GET['end'], "%Y-%m-%d")
     else:
         end = datetime(9900, 12, 31)

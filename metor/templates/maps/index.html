@@ -48,6 +48,9 @@
                       "</div>");
         map.openInfoWindowHtml(position, $node[0]);
 
+        /* no mostrar nada mas */
+        return;
+
         $('#datosestacion').show();
         $('#rosa').attr('src', station.windrose_url);
         $('#station_name').text(station.name);

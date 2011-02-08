@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+<script src="{{MEDIA_URL}}/js/jquery-1.4.2.min.js" type="text/javascript"></script>
+<script src="{{MEDIA_URL}}/js/jquery-ui-1.8.7.custom.min.js" type="text/javascript"></script>
+<script src="{{MEDIA_URL}}/js/jquery.ui.datepicker-es.js" type="text/javascript"></script>
+<link rel="stylesheet" href="{{MEDIA_URL}}/css/jquery-ui-1.8.7.custom.css" type="text/css">
+
+<script type="text/javascript" src="http://www.google.com/jsapi?key=test"></script>
+<script type="text/javascript">
+    /*google.load("maps", "2");*/
+    /*google.load("jquery", "1.4.2");*/
+    google.load('visualization', '1', {'packages':['annotatedtimeline']});
+</script>
+
+<script type="text/javascript">
+    var interfaces = {};
+
+    function update_windrose(interface_id) {
+        var img_windrose = $('#img_windrose__' + interface_id);
+
+        var begin_date = $('#input_windrose_begin__' + interface_id).val();
+        var end_date = $('#input_windrose_end__' + interface_id).val();
+        var granularity = $('#input_windrose_granularity__' + interface_id).val();
+
+        img_windrose.attr('src',
+                interfaces[interface_id].station.windrose_url +
+                '?begin=' + begin_date +
+                '&end=' + end_date +
+                '&granularity=' + granularity
+        );
+    }
+
+    function update_chart(interface_id) {
+        if (interfaces[interface_id].chart == null) {
+            interfaces[interface_id].chart = new google.visualization.AnnotatedTimeLine(document.getElementById('div_chart__' + interface_id));
+        }
+
+        var url = "{% url json_station_values station_id=-1 %}".replace("-1", interfaces[interface_id].station.stationId);
+
+        var parameter = $('#select_chart_parameter__' + interface_id).val();
+        var unit = $("#form_chart_unit__" + interface_id + " input[type='radio']:checked").val();
+        var begin = $("#input_chart_begin__" + interface_id).val();
+        var end = $("#input_chart_end__" + interface_id).val();
+        var granularity = $('#input_chart_granularity__' + interface_id).val();
+
+        $.getJSON(url, {
+                "parameter": parameter,
+                "unit": unit,
+                "begin": begin,
+                "end": end,
+                "granularity": granularity
+                }, function(data, status) {
+            var datatable = new google.visualization.DataTable();
+            datatable.addColumn('date', 'Date');
+            datatable.addColumn('number', parameter);
+            var rows = []
+            for (var i=0; i < data.values.length; i++){
+                var v = data.values[i];
+                rows[i] = [new Date(v[0],v[1]-1,v[2],v[3],v[4],v[5]), v[6]];
+            }
+            datatable.addRows(rows);
+            interfaces[interface_id].chart.draw(datatable);
+        });
+    }
+
+    function load_station(station_id, interface_id) {
+        var url = "{% url json_station station_id=-1 %}".replace("-1", station_id);
+
+        $.getJSON(url, function(station, status){
+            interfaces[interface_id] = {};
+            interfaces[interface_id].station = station;
+
+            update_windrose(interface_id);
+            update_chart(interface_id);
+        });
+    }
+
+    function setup_interface(interface_id) {
+        var select_station = $('#select_station__' + interface_id);
+        var div_station_display = $('#div_station_display__' + interface_id);
+
+        var input_windrose_begin = $('#input_windrose_begin__' + interface_id);
+        var input_windrose_end = $('#input_windrose_end__' + interface_id);
+
+        var select_chart_parameter = $('#select_chart_parameter__' + interface_id);
+
+        var input_chart_begin = $('#input_chart_begin__' + interface_id);
+        var input_chart_end = $('#input_chart_end__' + interface_id);
+
+        input_windrose_begin.val("");
+        input_windrose_begin.datepicker({ dateFormat: 'yy-mm-dd' });
+
+        input_windrose_end.val("");
+        input_windrose_end.datepicker({ dateFormat: 'yy-mm-dd' });
+
+        input_chart_begin.val("");
+        input_chart_begin.datepicker({ dateFormat: 'yy-mm-dd' });
+
+        input_chart_end.val("");
+        input_chart_end.datepicker({ dateFormat: 'yy-mm-dd' });
+
+        select_station.val("");
+
+        select_station.change(function() {
+                if (select_station.val() == "") {
+                    div_station_display.hide();
+                } else {
+                    div_station_display.show();
+                }
+
+                load_station(select_station.val(), interface_id);
+        });
+
+        select_chart_parameter.val("temperature");
+
+        select_chart_parameter.change(function() {
+                if (select_chart_parameter.val() == "temperature") {
+                    $('#div_chart_unit__' + interface_id).show();
+                } else {
+                    $('#div_chart_unit__' + interface_id).hide();
+                }
+
+                update_chart(interface_id);
+        });
+
+        $("#form_chart_unit__" + interface_id + " input[type='radio']").attr('checked', false);
+    }
+
+    $(function() {
+            {% for id in display_ids %}
+            setup_interface({{id}});
+            {% endfor %}
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<h1 style="color: black;">Comparación de Estaciones</h1>
+<br/>
+
+{% for id in display_ids %}
+<div id="div_station__{{id}}" style="width: 514px; border-style: solid; border-width: 1px; float: {% cycle 'left' 'right' %};">
+
+    <form>
+        <h3>Estación:</h3>
+        <select id="select_station__{{id}}" style="width: 10em;">
+            <option value="" selected />
+            {% for station in stations %}
+            <option value="{{station.stationId}}">{{station.name}}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <div id="div_station_display__{{id}}" style="display: none;">
+        {% comment %}
+        ############################
+        Display de la rosa de viento
+        ############################
+        {% endcomment %}
+
+        <div id="div_windrose_display__{{id}}">
+            <h4>Rosa del Viento</h4>
+
+            <form>
+                <ul>
+                    Desde <input id="input_windrose_begin__{{id}}" type="text" style="width: 10em;">
+                    hasta <input id="input_windrose_end__{{id}}" type="text" style="width: 10em;">
+                </ul>
+                <ul>
+                    Granularidad:
+                    <select id="input_windrose_granularity__{{id}}" style="width: 10em;">
+                        <option value="60">1 minuto</option>
+                        <option value="3600">1 hora</option>
+                        <option value="86400" selected>1 día</option>
+                    </select>
+                </ul>
+                <ul>
+                    <a href="javascript:update_windrose({{id}})">Actualizar</a>
+                </ul>
+            </form>
+            <img id="img_windrose__{{id}}" alt="Rosa de Viento"/>
+        </div>
+
+        {% comment %}
+        #####################
+        Display de los charts
+        #####################
+        {% endcomment %}
+
+        <div id="div_chart_display__{{id}}">
+            <h4>Historial</h4>
+
+            <select id="select_chart_parameter__{{id}}">
+                <option value="barometer">Barometer</option>
+                <option value="dewpoint">Dewpoint</option>
+                <option value="et">ET</option>
+                <option value="heat_index">Heat Index</option>
+                <option value="humidity">Humidity</option>
+                <option value="pressure">Pressure</option>
+                <option value="radiation">Radiation</option>
+                <option value="rain">Rain</option>
+                <option value="rain_rate">Rain Rate</option>
+                <option value="temperature" selected>Temperature</option>
+                <option value="uv">Uv</option>
+                <option value="windchill">Windchill</option>
+                <option value="wind_direction">Wind Direction</option>
+                <option value="wind_speed">Wind Speed</option>
+                <option value="wind_gust">Wind Gust</option>
+                <option value="wind_gust_dir">Wind Gust Dir</option>
+            </select>
+
+            <div id="div_chart_unit__{{id}}">
+                <form id="form_chart_unit__{{id}}">
+                    Unidad:
+                    <ul>
+                        <li><input type="radio" name="radio_chart_unit__{{id}}" value="celsius" />Celsius</li>
+                        <li><input type="radio" name="radio_chart_unit__{{id}}" value="fahrenheit" />Fahrenheit</li>
+                    </ul>
+                </form>
+            </div>
+
+            <div>
+                <ul>
+                    Desde <input id="input_chart_begin__{{id}}" type="text" style="width: 10em;">
+                    hasta <input id="input_chart_end__{{id}}" type="text" style="width: 10em;">
+                </ul>
+                <ul>
+                    Granularidad:
+                    <select id="input_chart_granularity__{{id}}" style="width: 10em;">
+                        <option value="60">1 minuto</option>
+                        <option value="3600">1 hora</option>
+                        <option value="86400" selected>1 día</option>
+                    </select>
+                </ul>
+                <ul>
+                    <a href="javascript:update_chart({{id}})">Actualizar</a>
+                </ul>
+            </div>
+
+            Sólo se pueden mostrar los últimos 2000 valores.
+
+            <div id="div_chart__{{id}}" style="width: 500px; height: 200px; margin-bottom: 50px;"></div>
+        </div>
+    </select>
+    </div>
+
+</div>
+
+{% endfor %}
+{% endblock %}
