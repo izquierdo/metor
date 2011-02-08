@@ -1,5 +1,79 @@
 {% extends "base.html" %}
 
+{% block extrahead %}
+    <script src="{{MEDIA_URL}}/js/jquery-1.4.2.min.js" type="text/javascript"></script>
+    <script src="{{MEDIA_URL}}/js/jquery-ui-1.8.7.custom.min.js" type="text/javascript"></script>
+    <script src="{{MEDIA_URL}}/js/jquery.ui.datepicker-es.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="{{MEDIA_URL}}/css/jquery-ui-1.8.7.custom.css" type="text/css">
+
+    <script type="text/javascript" src="http://www.google.com/jsapi?key=test"></script>
+    <script type="text/javascript">
+      google.load("maps", "2");
+      /*google.load("jquery", "1.4.2");*/
+      google.load('visualization', '1', {'packages':['annotatedtimeline']});
+    </script>
+
+    <script type="text/javascript">
+
+    var map;
+
+
+
+    $(document).unload(GUnload);
+    $(document).ready(function(){
+        if (GBrowserIsCompatible()) {
+            map = new GMap2(document.getElementById("map_canvas"));
+            map.setCenter(new GLatLng({{station.latitude}}, {{station.longitude}}), 5);
+            map.setUIToDefault();
+            var marker = new GMarker(new GLatLng({{station.latitude}},
+                                                 {{station.longitude}}));
+            map.addOverlay(marker);
+        }
+
+    });
+
+
+    </script>
+
+{% endblock %}
+
+
 {% block content %}
-{{ station }}
+<h2>Estación {{station.name}}</h2>
+
+<ul>
+  <li>Nombre: {{station.name}}</li>
+  <li>Ubicacion:  {{station.longitude}}, {{station.latitude}}</li>
+  <li>Elevacion:  {{station.elevation}}</li>
+  <li>Localidad:  {{station.location}}</li>
+  <li>Contact:  {{station.contact}}</li>
+</ul>
+
+<h3>Sensores</h3>
+{% if station.sensor_set.all %}
+<table>
+    <tr>
+      <td><b>Tipo</b></td>
+      <td><b>Inicio</b></td>
+      <td><b>Fin</b></td>
+      <td><b>Unidad</b></td>
+    </tr>
+{% for s in station.sensor_set.all %}
+    <tr>
+      <td>{{s.parameter_type}}</td>
+      <td>{{s.begin}}</td>
+      <td>{{s.end}}</td>
+      <td>{{s.unit}}</td>
+    </tr>
+{% endfor %}
+</table>
+
+{% else %}
+  <p>Esta estación no tiene sensores</p>
+{% endif %}
+
+{% endblock %}
+
+{% block sidebar %}
+<div id="map_canvas" style="width: 100%; border: 1px solid #999; height: 200px"></div>
 {% endblock %}

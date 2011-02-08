@@ -1,3 +1,4 @@
+# coding: utf-8
 from django.core.urlresolvers import reverse
 from django.db import models
 from django_extensions.db.fields import AutoSlugField
@@ -24,15 +25,15 @@ class Station(models.Model):
         db_table = u'station'
 
     stationId = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=30,db_column='stationName')
-    longitude = models.FloatField()
-    latitude = models.FloatField()
+    name = models.CharField(max_length=30,db_column='stationName', verbose_name="Nombre")
+    longitude = models.FloatField("Longitud")
+    latitude = models.FloatField("Latitud")
 
     # altitude y latitude son muy parecidos. Se suele usar elevation
     # para evitar confusion
-    elevation = models.FloatField(db_column='altitude')
-    location = models.CharField(max_length=50)
-    contact = models.ForeignKey(Contact, db_column='contactId')
+    elevation = models.FloatField(db_column='altitude', verbose_name=u"Elevación")
+    location = models.CharField(max_length=50, verbose_name="Localidad")
+    contact = models.ForeignKey(Contact, db_column='contactId', verbose_name="Contacto")
 
     # debe haber un default para que south no se queje
     # el separator es _ ya que - no funciona con la funcion reverse() de Django
@@ -194,19 +195,19 @@ class Station(models.Model):
 
                 if granularity:
                     current_date = measure.date + onemin
-    
+
                     while current_date < next_measure.date:
                         if current_date >= begin_date and current_date <= end_date:
                             avg_measure = measure
                             avg_measure.date = current_date
-    
+
                             # TODO lo que en verdad hay que revisar es que sea una unidad numerica
                             if sensor.unit == '?':
                                 values.append(avg_measure)
                             else:
                                 avg_measure.value = (measure.value + next_measure.value) / 2.0
                                 values.append(avg_measure)
-    
+
                         current_date = current_date + onemin
 
                 if next_measure.date >= begin_date and next_measure.date <= end_date:
