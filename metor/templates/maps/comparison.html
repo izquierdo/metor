@@ -40,8 +40,17 @@
 
         var parameter = $('#select_chart_parameter__' + interface_id).val();
         var unit = $("#form_chart_unit__" + interface_id + " input[type='radio']:checked").val();
+        var begin = $("#input_chart_begin__" + interface_id).val();
+        var end = $("#input_chart_end__" + interface_id).val();
+        var granularity = $('#input_chart_granularity__' + interface_id).val();
 
-        $.getJSON(url, {"parameter": parameter, "unit": unit}, function(data, status) {
+        $.getJSON(url, {
+                "parameter": parameter,
+                "unit": unit,
+                "begin": begin,
+                "end": end,
+                "granularity": granularity
+                }, function(data, status) {
             var datatable = new google.visualization.DataTable();
             datatable.addColumn('date', 'Date');
             datatable.addColumn('number', parameter);
@@ -76,11 +85,20 @@
 
         var select_chart_parameter = $('#select_chart_parameter__' + interface_id);
 
+        var input_chart_begin = $('#input_chart_begin__' + interface_id);
+        var input_chart_end = $('#input_chart_end__' + interface_id);
+
         input_windrose_begin.val("");
         input_windrose_begin.datepicker({ dateFormat: 'yy-mm-dd' });
 
         input_windrose_end.val("");
         input_windrose_end.datepicker({ dateFormat: 'yy-mm-dd' });
+
+        input_chart_begin.val("");
+        input_chart_begin.datepicker({ dateFormat: 'yy-mm-dd' });
+
+        input_chart_end.val("");
+        input_chart_end.datepicker({ dateFormat: 'yy-mm-dd' });
 
         select_station.val("");
 
@@ -194,6 +212,24 @@
                         <li><input type="radio" name="radio_chart_unit__{{id}}" value="fahrenheit" />Fahrenheit</li>
                     </ul>
                 </form>
+            </div>
+
+            <div>
+                <ul>
+                    Desde <input id="input_chart_begin__{{id}}" type="text" style="width: 10em;">
+                    hasta <input id="input_chart_end__{{id}}" type="text" style="width: 10em;">
+                </ul>
+                <ul>
+                    Granularidad:
+                    <select id="input_chart_granularity__{{id}}" style="width: 10em;">
+                        <option value="60">1 minuto</option>
+                        <option value="3600">1 hora</option>
+                        <option value="86400" selected>1 día</option>
+                    </select>
+                </ul>
+                <ul>
+                    <a href="javascript:update_chart({{id}})">Actualizar</a>
+                </ul>
             </div>
 
             Sólo se pueden mostrar los últimos 2000 valores.
