@@ -115,6 +115,12 @@
         select_chart_parameter.val("temperature");
 
         select_chart_parameter.change(function() {
+                if (select_chart_parameter.val() == "temperature") {
+                    $('#div_chart_unit__' + interface_id).show();
+                } else {
+                    $('#div_chart_unit__' + interface_id).hide();
+                }
+
                 update_chart(interface_id);
         });
 
